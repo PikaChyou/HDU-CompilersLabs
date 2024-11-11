@@ -1,6 +1,0 @@
-digraph G {
-    rankdir=LR;
-    1 -> 2 [label="a"];
-    1 [shape=doublecircle];
-    2 [shape=doublecircle];
-}
