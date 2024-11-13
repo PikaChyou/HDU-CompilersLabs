@@ -13,7 +13,7 @@ int main()
 
     Rule r = {"S", {{"X", "a"}, {"b"}}};
     g.insert(r);
-    r = {"X", {{"S", "x"}, {"c"}}};
+    r = {"X", {{"S", "x"}, {"ε"}}};
     g.insert(r);
 
     cout << "原文法：" << endl;

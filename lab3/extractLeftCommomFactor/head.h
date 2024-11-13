@@ -53,5 +53,5 @@ public:
     void extractLeftCommonFactors();                                                    // 提取左公因式
 
 private:
-    void traverseTrie(TrieNode *root, Symbol nowLeft, vector<Symbol> nowRight); // 使用递归构建无左公因式文法
+    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R); // 使用递归构建无左公因式文法
 };

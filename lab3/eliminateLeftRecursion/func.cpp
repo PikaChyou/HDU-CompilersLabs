@@ -204,7 +204,10 @@ void Grammar::eliminateDirectLeftRecursion()
         Rule newRule1;
         newRule1.left = A;
         for (vector<Symbol> &right : beta)
-            right.push_back(A1);
+            if (right[0] != "ε")
+                right.push_back(A1);
+            else
+                right = {A1};
         newRule1.rights = beta;
         rules.push_back(newRule1);
 
@@ -227,13 +230,6 @@ void Grammar::eliminateLeftRecursion()
     {
         for (auto j = nonterminals.begin(); j != i; j++)
         {
-
-            if (j == i)
-            {
-                std::cerr << "Error: j should never be equal to i" << std::endl;
-                continue;
-            }
-
             auto Ai = find_if(rules.begin(), rules.end(), [&](const Rule &r)
                               { return r.left == *i; });
             auto Aj = find_if(rules.begin(), rules.end(), [&](const Rule &r)
@@ -248,10 +244,19 @@ void Grammar::eliminateLeftRecursion()
                 {
                     for (auto &ajRight : Aj->rights)
                     {
-                        vector<Symbol> newRight;
-                        newRight.insert(newRight.end(), ajRight.begin(), ajRight.end());
-                        newRight.insert(newRight.end(), right.begin() + 1, right.end());
-                        newRights.push_back(newRight);
+                        if (ajRight[0] == "ε")
+                        {
+                            vector<Symbol> newRight;
+                            newRight.insert(newRight.end(), right.begin() + 1, right.end());
+                            newRights.push_back(newRight);
+                        }
+                        else
+                        {
+                            vector<Symbol> newRight;
+                            newRight.insert(newRight.end(), ajRight.begin(), ajRight.end());
+                            newRight.insert(newRight.end(), right.begin() + 1, right.end());
+                            newRights.push_back(newRight);
+                        }
                     }
                     it = Ai->rights.erase(it);
                 }

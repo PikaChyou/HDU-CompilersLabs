@@ -45,6 +45,3 @@ private:
 
 // 判断文法是否有直接左递归
 bool hasLeftRecursion(const Rule &r);
-
-// 消除包含间接在内的所有左递归
-Grammar eliminateLeftRecursion(const Grammar &g);

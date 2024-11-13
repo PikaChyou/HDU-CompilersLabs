@@ -1,0 +1,81 @@
+// 递归返回FIRST集的内容（遇到空串则继续递归）
+set<Symbol> getFirstFromSeq(const vector<Symbol> &seq, const vector<FIRST> &fs)
+{
+    set<Symbol> result;
+    if (seq.empty())
+        return result;
+
+    auto it = find_if(fs.begin(), fs.end(), [&](const FIRST &f)
+                      { return f.symbol == seq[0]; });
+    if (it != fs.end())
+    {
+        for (auto &s : it->firstSet)
+        {
+            if (s == "ε")
+            {
+                set<Symbol> tmp = getFirstFromSeq(vector<Symbol>(seq.begin() + 1, seq.end()), fs);
+                result.insert(tmp.begin(), tmp.end());
+            }
+            else
+                result.insert(s);
+        }
+    }
+    else
+    {
+        if (find(fs.begin(), fs.end(), FIRST{seq[0], {seq[0]}}) == fs.end())
+        {
+            FIRST f;
+            f.symbol = seq[0];
+            f.firstSet.insert(seq[0]);
+            fs.push_back(f);
+        }
+        result.insert(seq[0]);
+    }
+    return result;
+}
+
+// 计算FIRST集
+vector<FIRST> Grammar::getFIRST()
+{
+    vector<FIRST> first;
+
+    for (const auto &t : terminals)
+    {
+        FIRST f;
+        f.symbol = t;
+        f.firstSet.insert(t);
+        first.push_back(f);
+    }
+
+    for (const auto &nt : nonterminals)
+    {
+        FIRST f;
+        f.symbol = nt;
+        auto it = find_if(rules.begin(), rules.end(), [&](const Rule &r)
+                          { return r.left == nt; });
+        if (it != rules.end())
+            for (const auto &right : it->rights)
+            {
+                if (right[0] == "ε")
+                    f.firstSet.insert("ε");
+                else
+                {
+                    // 若右侧第一个符号是终结符，则将其加入 FIRST 集
+                    if (find(terminals.begin(), terminals.end(), right[0]) != terminals.end())
+                    {
+                        f.firstSet.insert(right[0]);
+                    }
+                    // 若右侧第一个符号是非终结符，则将其 FIRST 集中的符号加入 FIRST 集
+                    // 如果遇到空串，则继续查找下一个符号
+                    else
+                    {
+                        set<Symbol> tmp = getFirstFromSeq(right, first);
+                        f.firstSet.insert(tmp.begin(), tmp.end());
+                    }
+                }
+            }
+        first.push_back(f);
+    }
+
+    return first;
+}
