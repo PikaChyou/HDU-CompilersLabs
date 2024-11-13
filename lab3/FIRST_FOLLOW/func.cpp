@@ -401,7 +401,7 @@ void Grammar::computeFIRST(Symbol symbol, FIRST &firstSets, unordered_set<Symbol
 }
 
 // 获取FIRST集
-vector<FIRST> Grammar::getFIRST()
+FIRST Grammar::getFIRST()
 {
     FIRST firstSets;
     unordered_set<Symbol> visited;
@@ -409,13 +409,83 @@ vector<FIRST> Grammar::getFIRST()
     for (const auto &nonterminal : nonterminals)
         computeFIRST(nonterminal, firstSets, visited);
 
-    vector<FIRST> result;
-    for (const auto &entry : firstSets)
+    return firstSets;
+}
+
+// 输出FIRST或者FOLLOW集
+void displaySet(const unordered_map<Symbol, unordered_set<Symbol>> &sets)
+{
+    for (const auto &entry : sets)
     {
-        FIRST first;
-        first[entry.first] = entry.second;
-        result.push_back(first);
+        cout << "FIRST(" << entry.first << ") = { ";
+        for (const auto &symbol : entry.second)
+            cout << symbol << " ";
+        cout << "}" << endl;
+    }
+}
+
+void Grammar::computeFOLLOW(Symbol symbol, const FIRST &firstSets, FOLLOW &followSets, unordered_set<Symbol> &visited)
+{
+    if (visited.find(symbol) != visited.end())
+        return;
+
+    visited.insert(symbol);
+
+    for (const auto &rule : rules)
+    {
+        for (const auto &right : rule.rights)
+        {
+            for (size_t i = 0; i < right.size(); ++i)
+                if (right[i] == symbol)
+                {
+                    if (i + 1 < right.size())
+                    {
+                        Symbol nextSymbol = right[i + 1];
+                        if (find(terminals.begin(), terminals.end(), nextSymbol) != terminals.end())
+                            followSets[symbol].insert(nextSymbol);
+                        else
+                        {
+                            for (const auto &firstSym : firstSets.at(nextSymbol))
+                            {
+                                if (firstSym != "ε")
+                                    followSets[symbol].insert(firstSym);
+                            }
+                            if (firstSets.at(nextSymbol).count("ε"))
+                            {
+                                computeFOLLOW(rule.left, firstSets, followSets, visited);
+                                for (const auto &followSym : followSets[rule.left])
+                                    followSets[symbol].insert(followSym);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        computeFOLLOW(rule.left, firstSets, followSets, visited);
+                        for (const auto &followSym : followSets[rule.left])
+                            followSets[symbol].insert(followSym);
+                    }
+                }
+        }
     }
 
-    return result;
+    visited.erase(symbol);
+}
+
+FOLLOW Grammar::getFOLLOW(const FIRST &firstSets)
+{
+    unordered_map<Symbol, unordered_set<Symbol>> followSets;
+    unordered_set<Symbol> visited;
+
+    // 初始化所有非终结符的FOLLOW集为空
+    for (const auto &nonterminal : nonterminals)
+        followSets[nonterminal] = unordered_set<Symbol>();
+
+    // 起始符号的FOLLOW集包含终止符号$
+    if (!nonterminals.empty())
+        followSets[nonterminals[0]].insert("$");
+
+    for (const auto &nonterminal : nonterminals)
+        computeFOLLOW(nonterminal, firstSets, followSets, visited);
+
+    return followSets;
 }

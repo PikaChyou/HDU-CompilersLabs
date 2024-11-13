@@ -11,6 +11,11 @@ int main()
     r = {"B", {{"b"}}};
     g.insert(r);
     g.output();
-    vector<FIRST> first = g.getFIRST();
+    FIRST first = g.getFIRST();
+    FOLLOW follow = g.getFOLLOW(first);
+    cout << "FIRST:" << endl;
+    displaySet(first);
+    cout << "FOLLOW:" << endl;
+    displaySet(follow);
     return 0;
 }

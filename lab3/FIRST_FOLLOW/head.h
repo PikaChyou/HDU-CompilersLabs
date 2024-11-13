@@ -33,15 +33,11 @@ struct TrieNode
     TrieNode() : isEndOfWord(false) {}
 };
 
-// FIRST集
-typedef unordered_map<Symbol, unordered_set<Symbol>> FIRST;
+typedef unordered_map<Symbol, unordered_set<Symbol>> FIRST;  // FIRST集
+typedef unordered_map<Symbol, unordered_set<Symbol>> FOLLOW; // FOLLOW集
 
-// FOLLOW集
-struct FOLLOW
-{
-    Symbol symbol;
-    set<Symbol> followSet;
-};
+// 输出FIRST或者FOLLOW集
+void displaySet(const unordered_map<Symbol, unordered_set<Symbol>> &sets);
 
 // 生成Trie树
 TrieNode *generateTrie(const Rule &rule);
@@ -68,10 +64,12 @@ public:
     void sortNonterminals(bool desc);                                                   // 将非终结符按照字典序排序
     void eliminateLeftRecursion();                                                      // 消除直接左递归
     void extractLeftCommonFactors();                                                    // 提取左公因式
-    vector<FIRST> getFIRST();                                                           // 获取FIRST集
+    FIRST getFIRST();                                                                   // 获取FIRST集
+    FOLLOW getFOLLOW(const FIRST &firstSets);                                           // 获取FOLLOW集
 
 private:
-    void eliminateDirectLeftRecursion();                                                // 消除直接左递归
-    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R);                      // 使用递归构建无左公因式文法
-    void computeFIRST(Symbol symbol, FIRST &firstSets, unordered_set<Symbol> &visited); // 计算FIRST集
+    void eliminateDirectLeftRecursion();                                                                           // 消除直接左递归
+    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R);                                                 // 使用递归构建无左公因式文法
+    void computeFIRST(Symbol symbol, FIRST &firstSets, unordered_set<Symbol> &visited);                            // 计算FIRST集
+    void computeFOLLOW(Symbol symbol, const FIRST &firstSets, FOLLOW &followSets, unordered_set<Symbol> &visited); // 计算FOLLOW集
 };
