@@ -53,7 +53,8 @@ bool Grammar::insert(const Rule &r)
     if (it == rules.end())
     {
         rules.push_back(r);
-        nonterminals.push_back(r.left);
+        if (find(nonterminals.begin(), nonterminals.end(), r.left) == nonterminals.end())
+            nonterminals.push_back(r.left);
         for (vector<Symbol> right : r.rights)
             for (Symbol s : right)
                 if (find(terminals.begin(), terminals.end(), s) == terminals.end() &&

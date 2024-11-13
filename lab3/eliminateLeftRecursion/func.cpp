@@ -53,7 +53,8 @@ bool Grammar::insert(const Rule &r)
     if (it == rules.end())
     {
         rules.push_back(r);
-        nonterminals.push_back(r.left);
+        if (find(nonterminals.begin(), nonterminals.end(), r.left) == nonterminals.end())
+            nonterminals.push_back(r.left);
         for (vector<Symbol> right : r.rights)
             for (Symbol s : right)
                 if (find(terminals.begin(), terminals.end(), s) == terminals.end() &&
@@ -226,6 +227,13 @@ void Grammar::eliminateLeftRecursion()
     {
         for (auto j = nonterminals.begin(); j != i; j++)
         {
+
+            if (j == i)
+            {
+                std::cerr << "Error: j should never be equal to i" << std::endl;
+                continue;
+            }
+
             auto Ai = find_if(rules.begin(), rules.end(), [&](const Rule &r)
                               { return r.left == *i; });
             auto Aj = find_if(rules.begin(), rules.end(), [&](const Rule &r)

@@ -3,8 +3,20 @@
 int main()
 {
     Grammar g;
-    g.input();
-    cout << "原始文法：" << endl;
+
+    // Rule r = {"S", {{"S", "+", "T"}, {"T"}}};
+    // g.insert(r);
+    // r = {"T", {{"T", "+", "F"}, {"F"}}};
+    // g.insert(r);
+    // r = {"F", {{"(", "E", ")"}, {"id"}}};
+    // g.insert(r);
+
+    Rule r = {"S", {{"X", "a"}, {"b"}}};
+    g.insert(r);
+    r = {"X", {{"S", "x"}, {"c"}}};
+    g.insert(r);
+
+    cout << "原文法：" << endl;
     g.output();
 
     g.eliminateLeftRecursion();
