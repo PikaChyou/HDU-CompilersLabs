@@ -181,16 +181,29 @@ void Grammar::traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R)
     }
     // 若当前节点是叶子节点，则插入规则
     if (root->children.size() == 0 && root->isEndOfWord)
-        insert({L, {R}});
+    {
+        auto it = find(rules.begin(), rules.end(), Rule{L, {R}});
+        if (it == rules.end())
+            rules.push_back({L, {R}});
+        else
+            it->rights.push_back(R);
+    }
     // 遇到分叉节点，将该节点作为新的根节点，继续遍历树
     else
     {
         Symbol newL = L;
         while (find(nonterminals.begin(), nonterminals.end(), newL) != nonterminals.end())
             newL += "'";
+        nonterminals.push_back(newL);
         vector<Symbol> tmp = R;
         tmp.push_back(newL);
-        insert({L, {tmp}});
+
+        auto it = find(rules.begin(), rules.end(), Rule{L, {tmp}});
+        if (it == rules.end())
+            rules.push_back({L, {tmp}});
+        else
+            it->rights.push_back(tmp);
+
         tmp.clear();
         for (auto it = root->children.begin(); it != root->children.end(); ++it)
         {
@@ -199,7 +212,10 @@ void Grammar::traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R)
         }
         tmp.clear();
         if (root->isEndOfWord)
-            insert({newL, {{"ε"}}});
+        {
+            auto it = find(rules.begin(), rules.end(), Rule{newL, {{"ε"}}});
+            it->rights.push_back({"ε"});
+        }
     }
 }
 
@@ -207,10 +223,10 @@ void Grammar::traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R)
 void Grammar::extractLeftCommonFactors()
 {
 
-    vector<Rule> preRules = rules;
+    vector<Rule> pre = rules;
     rules.clear();
     // 遍历每一条规则
-    for (auto it = preRules.begin(); it != preRules.end(); ++it)
+    for (auto it = pre.begin(); it != pre.end(); ++it)
     {
         TrieNode *root = generateTrie(*it);
         Symbol L = it->left;
@@ -223,5 +239,5 @@ void Grammar::extractLeftCommonFactors()
             R.clear();
         }
     }
-    preRules.clear();
+    pre.clear();
 }

@@ -2,13 +2,14 @@
 
 int main()
 {
-    Grammar g = input();
+    Grammar g;
+    g.input();
     cout << "原始文法：" << endl;
-    output(g);
+    g.output();
 
-    Grammar newGrammar = eliminateLeftRecursion(g);
+    g.eliminateLeftRecursion();
     cout << "消除左递归后的文法：" << endl;
-    output(newGrammar);
+    g.output();
 
     return 0;
 }

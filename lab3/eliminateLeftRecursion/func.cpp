@@ -1,23 +1,15 @@
 #include "head.h"
 
-// 获取符号,如果符号不在文法中，则将其加入文法的符号集合中
-Symbol getSymbol(Grammar &g, const Symbol &s)
+// 非默认的构造函数
+Grammar::Grammar(vector<Symbol> terminals, vector<Symbol> nonterminals, vector<Rule> rules)
+    : terminals(terminals), nonterminals(nonterminals), rules(rules)
 {
-    if (find(g.terminals.begin(), g.terminals.end(), s) != g.terminals.end() ||
-        find(g.nonterminals.begin(), g.nonterminals.end(), s) != g.nonterminals.end())
-        return s;
-    if (isupper(s[0]))
-        g.nonterminals.push_back(s);
-    else
-        g.terminals.push_back(s);
-    return s;
+    this->terminals.push_back("ε");
 }
 
 // 输入文法
-Grammar input()
+void Grammar::input()
 {
-    Grammar g;
-    g.num = 0;
     cout << "请输入文法规则：" << endl;
     string s;
     while (getline(cin, s))
@@ -25,7 +17,7 @@ Grammar input()
         if (s == "\n" || s == "")
             break;
         Rule r;
-        Symbol left = getSymbol(g, s.substr(0, s.find("->")));
+        Symbol left = s.substr(0, s.find("->"));
         r.left = left;
         s = s.substr(s.find("->") + 2);
         vector<Symbol> right_part;
@@ -35,7 +27,7 @@ Grammar input()
             string token = s.substr(0, pos);
             for (char &c : token)
             {
-                Symbol sym = getSymbol(g, string(1, c));
+                Symbol sym = string(1, c);
                 right_part.push_back(sym);
             }
             r.rights.push_back(right_part);
@@ -44,19 +36,90 @@ Grammar input()
         }
         for (char &c : s)
         {
-            Symbol sym = getSymbol(g, string(1, c));
+            Symbol sym = string(1, c);
             right_part.push_back(sym);
         }
         r.rights.push_back(right_part);
-        g.rules.push_back(r);
+        rules.push_back(r);
     }
-    return g;
+}
+
+// 插入规则
+bool Grammar::insert(const Rule &r)
+{
+    auto it = find(rules.begin(), rules.end(), r);
+
+    // 如果规则左侧不在文法中，则插入规则
+    if (it == rules.end())
+    {
+        rules.push_back(r);
+        nonterminals.push_back(r.left);
+        for (vector<Symbol> right : r.rights)
+            for (Symbol s : right)
+                if (find(terminals.begin(), terminals.end(), s) == terminals.end() &&
+                    find(nonterminals.begin(), nonterminals.end(), s) == nonterminals.end())
+                {
+                    if (isupper(s[0]))
+                        nonterminals.push_back(s);
+                    else
+                        terminals.push_back(s);
+                }
+        return true;
+    }
+
+    for (vector<Symbol> right : r.rights)
+    {
+        if (find(it->rights.begin(), it->rights.end(), right) == it->rights.end())
+        {
+            // 如果规则右侧不在文法中，则插入规则
+            it->rights.push_back(right);
+            // 更新文法的符号集合
+            for (Symbol s : right)
+                if (find(terminals.begin(), terminals.end(), s) == terminals.end() &&
+                    find(nonterminals.begin(), nonterminals.end(), s) == nonterminals.end())
+                {
+                    if (isupper(s[0]))
+                        nonterminals.push_back(s);
+                    else
+                        terminals.push_back(s);
+                }
+            return true;
+        }
+    }
+
+    // 若规则已存在，则返回false
+    return false;
+}
+
+// 合并文法，需要手动销毁被合并的函数
+void Grammar::merge(Grammar *g)
+{
+    for (auto &t : g->terminals)
+        if (find(terminals.begin(), terminals.end(), t) == terminals.end())
+            terminals.push_back(t);
+
+    for (auto &nt : g->nonterminals)
+        if (find(nonterminals.begin(), nonterminals.end(), nt) == nonterminals.end())
+            nonterminals.push_back(nt);
+
+    for (auto &rule : g->rules)
+    {
+        auto it = find(rules.begin(), rules.end(), rule);
+        if (it == rules.end())
+            rules.push_back(rule);
+        else
+            for (vector<Symbol> right : rule.rights)
+            {
+                if (find(it->rights.begin(), it->rights.end(), right) == it->rights.end())
+                    it->rights.push_back(right);
+            }
+    }
 }
 
 // 输出文法
-void output(const Grammar &g)
+void Grammar::output() const
 {
-    for (auto &r : g.rules)
+    for (auto &r : rules)
     {
         cout << r.left << " -> ";
         for (size_t i = 0; i < r.rights.size(); ++i)
@@ -72,6 +135,29 @@ void output(const Grammar &g)
     }
 }
 
+// 析构函数
+Grammar::~Grammar()
+{
+    for (auto &r : rules)
+    {
+        for (auto &right : r.rights)
+            right.clear();
+        r.rights.clear();
+    }
+    rules.clear();
+    terminals.clear();
+    nonterminals.clear();
+}
+
+// 将非终结符按照字典序排序
+void Grammar::sortNonterminals(bool desc = false)
+{
+    if (desc)
+        sort(nonterminals.begin(), nonterminals.end(), greater<Symbol>());
+    else
+        sort(nonterminals.begin(), nonterminals.end(), less<Symbol>());
+}
+
 // 判断文法是否有直接左递归
 bool hasLeftRecursion(const Rule &r)
 {
@@ -85,15 +171,15 @@ bool hasLeftRecursion(const Rule &r)
 }
 
 // 消除直接左递归
-Grammar eliminateDirectLeftRecursion(const Grammar &g)
+void Grammar::eliminateDirectLeftRecursion()
 {
-    Grammar newGrammar = g;
-    newGrammar.rules.clear();
-    for (auto &r : g.rules)
+    vector<Rule> pre = rules;
+    rules.clear();
+    for (auto &r : pre)
     {
         if (!hasLeftRecursion(r))
         {
-            newGrammar.rules.push_back(r);
+            rules.push_back(r);
             continue;
         }
 
@@ -109,44 +195,40 @@ Grammar eliminateDirectLeftRecursion(const Grammar &g)
                 beta.push_back(right);
         }
 
-        Symbol A1 = getSymbol(newGrammar, A + "'");
+        Symbol A1 = A + "'";
+        while (find(nonterminals.begin(), nonterminals.end(), A1) != nonterminals.end())
+            A1 += "'";
+        nonterminals.push_back(A1);
 
         Rule newRule1;
         newRule1.left = A;
         for (vector<Symbol> &right : beta)
             right.push_back(A1);
         newRule1.rights = beta;
-        newGrammar.rules.push_back(newRule1);
+        rules.push_back(newRule1);
 
         Rule newRule2;
         newRule2.left = A1;
         for (vector<Symbol> &right : alpha)
             right.push_back(A1);
         newRule2.rights = alpha;
-        newRule2.rights.push_back({getSymbol(newGrammar, "ε")});
-        newGrammar.rules.push_back(newRule2);
+        newRule2.rights.push_back({"ε"});
+        rules.push_back(newRule2);
     }
-    return newGrammar;
-}
-
-// 将非终结符按照字典序排序
-void sortNonterminals(Grammar &g)
-{
-    sort(g.nonterminals.begin(), g.nonterminals.end());
+    pre.clear();
 }
 
 // 消除包含间接在内的所有左递归
-Grammar eliminateLeftRecursion(const Grammar &g)
+void Grammar::eliminateLeftRecursion()
 {
-    Grammar newGrammar = g;
-    sortNonterminals(newGrammar);
-    for (auto i = newGrammar.nonterminals.begin(); i != newGrammar.nonterminals.end(); i++)
+    sortNonterminals();
+    for (auto i = nonterminals.begin(); i != nonterminals.end(); i++)
     {
-        for (auto j = newGrammar.nonterminals.begin(); j != i; j++)
+        for (auto j = nonterminals.begin(); j != i; j++)
         {
-            auto Ai = find_if(newGrammar.rules.begin(), newGrammar.rules.end(), [&](const Rule &r)
+            auto Ai = find_if(rules.begin(), rules.end(), [&](const Rule &r)
                               { return r.left == *i; });
-            auto Aj = find_if(newGrammar.rules.begin(), newGrammar.rules.end(), [&](const Rule &r)
+            auto Aj = find_if(rules.begin(), rules.end(), [&](const Rule &r)
                               { return r.left == *j; });
 
             vector<vector<Symbol>> newRights;
@@ -166,13 +248,11 @@ Grammar eliminateLeftRecursion(const Grammar &g)
                     it = Ai->rights.erase(it);
                 }
                 else
-                {
                     ++it;
-                }
             }
 
             Ai->rights.insert(Ai->rights.end(), newRights.begin(), newRights.end());
         }
     }
-    return eliminateDirectLeftRecursion(newGrammar);
+    eliminateDirectLeftRecursion();
 }
