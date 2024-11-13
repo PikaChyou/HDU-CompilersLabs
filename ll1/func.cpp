@@ -532,3 +532,100 @@ set<Symbol> Grammar::calf(vector<Symbol> seq)
     }
     return firstSet;
 }
+
+// 判断是否是LL(1)文法
+bool Grammar::isLL1()
+{
+    get_FIRST();
+    get_FOLLOW();
+
+    for (auto &nt : nonterminals)
+    {
+        auto it = find(rules.begin(), rules.end(), Rule{nt, {}});
+        if (it == rules.end())
+            continue;
+        set<Symbol> convergance;
+        for (auto &right : it->rights)
+        {
+            set<Symbol> tmp = calf(right);
+            set<Symbol> intersection;
+            set_intersection(convergance.begin(), convergance.end(), tmp.begin(), tmp.end(), inserter(intersection, intersection.begin()));
+            if (intersection.size() != 0)
+                return false;
+            set_union(convergance.begin(), convergance.end(), tmp.begin(), tmp.end(), inserter(convergance, convergance.begin()));
+        }
+    }
+    return true;
+}
+
+bool Grammar::generateParsingTable()
+{
+    if (isLL1() == false)
+    {
+        cout << "不是LL(1)文法" << endl;
+        return false;
+    }
+    if (!pt.empty())
+        return true;
+    for (const auto &rule : rules)
+    {
+        Symbol left = rule.left;
+        for (const auto &right : rule.rights)
+        {
+            set<Symbol> firstSet = calf(right);
+            for (const auto &terminal : firstSet)
+            {
+                if (terminal != "ε")
+                    pt[left][terminal] = right;
+            }
+            if (firstSet.find("ε") != firstSet.end())
+            {
+                for (const auto &terminal : follow[left])
+                    pt[left][terminal] = right;
+            }
+        }
+    }
+    return true;
+}
+
+bool Grammar::LL1_parser(const vector<Symbol> &input)
+{
+    if (!generateParsingTable())
+    {
+        cout << "预测分析表生成失败" << endl;
+        return false;
+    }
+    stack<Symbol> s;
+    s.push(nonterminals[0]);
+    vector<Symbol> tmp = input;
+    tmp.push_back("$");
+    while (!s.empty())
+    {
+        Symbol top = s.top();
+        s.pop();
+        Symbol current_symbol = tmp[0];
+
+        if (find(terminals.begin(), terminals.end(), top) != terminals.end())
+        {
+            if (top == current_symbol)
+                tmp.erase(tmp.begin());
+            else
+                return false;
+        }
+        else
+        {
+            if (pt[top].find(current_symbol) == pt[top].end())
+                return false;
+            else
+            {
+                vector<Symbol> right = pt[top][current_symbol];
+                for (auto it = right.rbegin(); it != right.rend(); ++it)
+                    if (*it != "ε")
+                        s.push(*it);
+            }
+        }
+    }
+    if (tmp[0] == "$")
+        return true;
+    return false;
+}

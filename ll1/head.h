@@ -5,6 +5,7 @@
 #include <set>
 #include <string>
 #include <queue>
+#include <stack>
 #include <algorithm>
 
 using namespace std;
@@ -49,11 +50,12 @@ bool hasLeftRecursion(const Rule &r);
 class Grammar
 {
 private:
-    vector<Symbol> terminals;    // 终结符
-    vector<Symbol> nonterminals; // 非终结符
-    vector<Rule> rules;          // 规则
-    FIRST first;                 // FIRST集
-    FOLLOW follow;               // FOLLOW集
+    vector<Symbol> terminals;                    // 终结符
+    vector<Symbol> nonterminals;                 // 非终结符
+    vector<Rule> rules;                          // 规则
+    FIRST first;                                 // FIRST集
+    FOLLOW follow;                               // FOLLOW集
+    map<Symbol, map<Symbol, vector<Symbol>>> pt; // 预测分析表
 
 public:
     Grammar() : terminals({"ε"}) {};                                                    // 默认终结符集合中包含空串
@@ -69,10 +71,13 @@ public:
     FIRST get_FIRST(bool display);                                                      // 获取FIRST集并打印
     set<Symbol> calf(vector<Symbol> seq);                                               // 根据非终结符的FIRST集计算FIRST集
     FOLLOW get_FOLLOW(bool display);                                                    // 获取FOLLOW集并打印
+    bool isLL1();                                                                       // 判断是否是LL(1)文法
+    bool LL1_parser(const vector<Symbol> &input);                                       // LL(1)解析器
 
 private:
     void eliminateDirectLeftRecursion();                           // 消除直接左递归
     void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R); // 使用递归构建无左公因式文法
     void compute_FIRST(Symbol symbol, set<Symbol> &visited);       // 计算FIRST集
     void compute_FOLLOW(Symbol symbol, set<Symbol> &visited);      // 计算FOLLOW集
+    bool generateParsingTable();                                   // 生成预测分析表
 };

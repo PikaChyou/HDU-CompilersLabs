@@ -15,11 +15,12 @@ int main()
     g.get_FIRST(true);
     cout << endl;
     g.get_FOLLOW(true);
-    set<Symbol> first = g.calf({"B", "A"});
-    cout << "FIRST(A B) = { ";
-    for (const auto &symbol : first)
-        cout << symbol << " ";
-    cout << "}" << endl;
     cout << endl;
+    cout << g.isLL1() << endl;
+    cout << endl;
+    if (g.LL1_parser(vector<Symbol>{"a", "b"}))
+        cout << "Parsing Successful" << endl;
+    else
+        cout << "Syntax Error" << endl;
     return 0;
 }
