@@ -424,14 +424,14 @@ void displaySet(const map<Symbol, set<Symbol>> &sets)
 {
     for (const auto &entry : sets)
     {
-        cout << "FIRST(" << entry.first << ") = { ";
+        cout << "Set(" << entry.first << ") = { ";
         for (const auto &symbol : entry.second)
             cout << symbol << " ";
         cout << "}" << endl;
     }
 }
 
-void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited)
+void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited, bool &changed)
 {
     if (visited.find(symbol) != visited.end())
         return;
@@ -449,27 +449,39 @@ void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited)
                     {
                         Symbol nextSymbol = right[i + 1];
                         if (find(terminals.begin(), terminals.end(), nextSymbol) != terminals.end())
-                            follow[symbol].insert(nextSymbol);
+                        {
+                            if (follow[symbol].insert(nextSymbol).second)
+                                changed = true;
+                        }
                         else
                         {
                             for (const auto &firstSym : first.at(nextSymbol))
                             {
                                 if (firstSym != "ε")
-                                    follow[symbol].insert(firstSym);
+                                {
+                                    if (follow[symbol].insert(firstSym).second)
+                                        changed = true;
+                                }
                             }
                             if (first.at(nextSymbol).count("ε"))
                             {
-                                compute_FOLLOW(rule.left, visited);
+                                compute_FOLLOW(rule.left, visited, changed);
                                 for (const auto &followSym : follow[rule.left])
-                                    follow[symbol].insert(followSym);
+                                {
+                                    if (follow[symbol].insert(followSym).second)
+                                        changed = true;
+                                }
                             }
                         }
                     }
                     else
                     {
-                        compute_FOLLOW(rule.left, visited);
+                        compute_FOLLOW(rule.left, visited, changed);
                         for (const auto &followSym : follow[rule.left])
-                            follow[symbol].insert(followSym);
+                        {
+                            if (follow[symbol].insert(followSym).second)
+                                changed = true;
+                        }
                     }
                 }
         }
@@ -499,8 +511,13 @@ FOLLOW Grammar::get_FOLLOW(bool display = false)
     if (!nonterminals.empty())
         follow[nonterminals[0]].insert("$");
 
-    for (const auto &nonterminal : nonterminals)
-        compute_FOLLOW(nonterminal, visited);
+    bool changed = true;
+    while (changed)
+    {
+        changed = false;
+        for (const auto &nonterminal : nonterminals)
+            compute_FOLLOW(nonterminal, visited, changed);
+    }
 
     if (display)
         displaySet(follow);

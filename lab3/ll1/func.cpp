@@ -5,6 +5,7 @@ Grammar::Grammar(vector<Symbol> terminals, vector<Symbol> nonterminals, vector<R
     : terminals(terminals), nonterminals(nonterminals), rules(rules)
 {
     this->terminals.push_back("ε");
+    this->terminals.push_back("$");
 }
 
 // 输入文法
@@ -424,14 +425,14 @@ void displaySet(const map<Symbol, set<Symbol>> &sets)
 {
     for (const auto &entry : sets)
     {
-        cout << "FIRST(" << entry.first << ") = { ";
+        cout << "Set(" << entry.first << ") = { ";
         for (const auto &symbol : entry.second)
             cout << symbol << " ";
         cout << "}" << endl;
     }
 }
 
-void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited)
+void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited, bool &changed)
 {
     if (visited.find(symbol) != visited.end())
         return;
@@ -449,27 +450,39 @@ void Grammar::compute_FOLLOW(Symbol symbol, set<Symbol> &visited)
                     {
                         Symbol nextSymbol = right[i + 1];
                         if (find(terminals.begin(), terminals.end(), nextSymbol) != terminals.end())
-                            follow[symbol].insert(nextSymbol);
+                        {
+                            if (follow[symbol].insert(nextSymbol).second)
+                                changed = true;
+                        }
                         else
                         {
                             for (const auto &firstSym : first.at(nextSymbol))
                             {
                                 if (firstSym != "ε")
-                                    follow[symbol].insert(firstSym);
+                                {
+                                    if (follow[symbol].insert(firstSym).second)
+                                        changed = true;
+                                }
                             }
                             if (first.at(nextSymbol).count("ε"))
                             {
-                                compute_FOLLOW(rule.left, visited);
+                                compute_FOLLOW(rule.left, visited, changed);
                                 for (const auto &followSym : follow[rule.left])
-                                    follow[symbol].insert(followSym);
+                                {
+                                    if (follow[symbol].insert(followSym).second)
+                                        changed = true;
+                                }
                             }
                         }
                     }
                     else
                     {
-                        compute_FOLLOW(rule.left, visited);
+                        compute_FOLLOW(rule.left, visited, changed);
                         for (const auto &followSym : follow[rule.left])
-                            follow[symbol].insert(followSym);
+                        {
+                            if (follow[symbol].insert(followSym).second)
+                                changed = true;
+                        }
                     }
                 }
         }
@@ -499,8 +512,13 @@ FOLLOW Grammar::get_FOLLOW(bool display = false)
     if (!nonterminals.empty())
         follow[nonterminals[0]].insert("$");
 
-    for (const auto &nonterminal : nonterminals)
-        compute_FOLLOW(nonterminal, visited);
+    bool changed = true;
+    while (changed)
+    {
+        changed = false;
+        for (const auto &nonterminal : nonterminals)
+            compute_FOLLOW(nonterminal, visited, changed);
+    }
 
     if (display)
         displaySet(follow);
@@ -558,7 +576,7 @@ bool Grammar::isLL1()
     return true;
 }
 
-bool Grammar::generateParsingTable()
+bool Grammar::generateParsingTable(bool display = false)
 {
     if (isLL1() == false)
     {
@@ -567,6 +585,7 @@ bool Grammar::generateParsingTable()
     }
     if (!pt.empty())
         return true;
+
     for (const auto &rule : rules)
     {
         Symbol left = rule.left;
@@ -585,6 +604,40 @@ bool Grammar::generateParsingTable()
             }
         }
     }
+    if (display)
+    {
+        cout << "预测分析表:" << endl;
+        cout << setw(10) << " ";
+        for (const auto &terminal : terminals)
+        {
+            if (terminal == "ε")
+                continue;
+            else
+                cout << setw(10) << terminal;
+        }
+        cout << endl;
+
+        for (const auto &nonterminal : nonterminals)
+        {
+            cout << setw(10) << nonterminal;
+            for (const auto &terminal : terminals)
+            {
+                if (terminal == "ε")
+                    continue;
+                else if (pt[nonterminal].find(terminal) != pt[nonterminal].end())
+                {
+                    string production;
+                    production += nonterminal + " -> ";
+                    for (const auto &sym : pt[nonterminal][terminal])
+                        production += sym + " ";
+                    cout << setw(10) << production;
+                }
+                else
+                    cout << setw(10) << " ";
+            }
+            cout << endl;
+        }
+    }
     return true;
 }
 
@@ -599,26 +652,62 @@ bool Grammar::LL1_parser(const vector<Symbol> &input)
     s.push(nonterminals[0]);
     vector<Symbol> tmp = input;
     tmp.push_back("$");
+
+    cout << "输入串: ";
+    for (const auto &sym : input)
+        cout << sym << " ";
+    cout << endl;
+
     while (!s.empty())
     {
+        cout << "栈内元素:";
+        stack<Symbol> tmp_s = s;
+        while (!tmp_s.empty())
+        {
+            cout << tmp_s.top() << " ";
+            tmp_s.pop();
+        }
+
         Symbol top = s.top();
         s.pop();
         Symbol current_symbol = tmp[0];
 
+        cout << endl;
+        cout << "输入串:";
+        for (const auto &sym : tmp)
+            cout << sym << " ";
+        cout << endl;
+
+        cout << endl;
+
         if (find(terminals.begin(), terminals.end(), top) != terminals.end())
         {
             if (top == current_symbol)
+            {
+                cout << "匹配终结符: " << top << endl;
                 tmp.erase(tmp.begin());
+            }
             else
+            {
+                cout << "错误: 终结符不匹配" << endl;
                 return false;
+            }
         }
         else
         {
             if (pt[top].find(current_symbol) == pt[top].end())
+            {
+                cout << "错误: 无法从预测分析表中找到对应的产生式" << endl;
                 return false;
+            }
             else
             {
                 vector<Symbol> right = pt[top][current_symbol];
+                cout << "使用产生式: " << top << " -> ";
+                for (const auto &sym : right)
+                    cout << sym << " ";
+                cout << endl;
+
                 for (auto it = right.rbegin(); it != right.rend(); ++it)
                     if (*it != "ε")
                         s.push(*it);
@@ -626,6 +715,10 @@ bool Grammar::LL1_parser(const vector<Symbol> &input)
         }
     }
     if (tmp[0] == "$")
+    {
+        cout << "成功: 输入串被成功解析" << endl;
         return true;
+    }
+    cout << "错误: 输入串未能完全解析" << endl;
     return false;
 }

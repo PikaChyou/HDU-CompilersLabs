@@ -4,16 +4,11 @@ int main()
 {
     Grammar g;
 
-    // Rule r = {"S", {{"S", "+", "T"}, {"T"}}};
-    // g.insert(r);
-    // r = {"T", {{"T", "+", "F"}, {"F"}}};
-    // g.insert(r);
-    // r = {"F", {{"(", "E", ")"}, {"id"}}};
-    // g.insert(r);
-
-    Rule r = {"S", {{"X", "a"}, {"b"}}};
+    Rule r = {"S", {{"S", "+", "T"}, {"T"}}};
     g.insert(r);
-    r = {"X", {{"S", "x"}, {"ε"}}};
+    r = {"T", {{"T", "+", "F"}, {"F"}}};
+    g.insert(r);
+    r = {"F", {{"(", "E", ")"}, {"id"}}};
     g.insert(r);
 
     cout << "原文法：" << endl;

@@ -7,6 +7,7 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ private:
     map<Symbol, map<Symbol, vector<Symbol>>> pt; // 预测分析表
 
 public:
-    Grammar() : terminals({"ε"}) {};                                                    // 默认终结符集合中包含空串
+    Grammar() : terminals({"ε", "$"}) {};                                               // 默认终结符集合中包含空串
     Grammar(vector<Symbol> terminals, vector<Symbol> nonterminals, vector<Rule> rules); // 构造函数
     ~Grammar();                                                                         // 析构函数
     void input();                                                                       // 输入文法
@@ -72,12 +73,12 @@ public:
     set<Symbol> calf(vector<Symbol> seq);                                               // 根据非终结符的FIRST集计算FIRST集
     FOLLOW get_FOLLOW(bool display);                                                    // 获取FOLLOW集并打印
     bool isLL1();                                                                       // 判断是否是LL(1)文法
+    bool generateParsingTable(bool display);                                            // 生成预测分析表
     bool LL1_parser(const vector<Symbol> &input);                                       // LL(1)解析器
 
 private:
-    void eliminateDirectLeftRecursion();                           // 消除直接左递归
-    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R); // 使用递归构建无左公因式文法
-    void compute_FIRST(Symbol symbol, set<Symbol> &visited);       // 计算FIRST集
-    void compute_FOLLOW(Symbol symbol, set<Symbol> &visited);      // 计算FOLLOW集
-    bool generateParsingTable();                                   // 生成预测分析表
+    void eliminateDirectLeftRecursion();                                     // 消除直接左递归
+    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R);           // 使用递归构建无左公因式文法
+    void compute_FIRST(Symbol symbol, set<Symbol> &visited);                 // 计算FIRST集
+    void compute_FOLLOW(Symbol symbol, set<Symbol> &visited, bool &changed); // 计算FOLLOW集
 };

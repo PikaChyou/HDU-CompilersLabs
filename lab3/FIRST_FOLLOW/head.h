@@ -71,8 +71,8 @@ public:
     FOLLOW get_FOLLOW(bool display);                                                    // 获取FOLLOW集并打印
 
 private:
-    void eliminateDirectLeftRecursion();                           // 消除直接左递归
-    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R); // 使用递归构建无左公因式文法
-    void compute_FIRST(Symbol symbol, set<Symbol> &visited);       // 计算FIRST集
-    void compute_FOLLOW(Symbol symbol, set<Symbol> &visited);      // 计算FOLLOW集
+    void eliminateDirectLeftRecursion();                                     // 消除直接左递归
+    void traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R);           // 使用递归构建无左公因式文法
+    void compute_FIRST(Symbol symbol, set<Symbol> &visited);                 // 计算FIRST集
+    void compute_FOLLOW(Symbol symbol, set<Symbol> &visited, bool &changed); // 计算FOLLOW集
 };
