@@ -10,6 +10,6 @@ int fibonacci(int n)
 
 int main()
 {
-    int n = 10;
+    const int n = 10;
     return fibonacci(n);
 }

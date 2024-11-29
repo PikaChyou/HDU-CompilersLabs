@@ -6,13 +6,10 @@
 %option header-file="lex.yy.h"
 
 TYPE int|float|void
-CONST const
 RETURN return
 IF if
 ELSE else
 WHILE while
-BREAK break
-CONTINUE continue
 PLUS \+
 MINUS -
 INT [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
@@ -73,14 +70,11 @@ ERROR .
 {RC}       { printf("RC \t%s\n", yytext); }
 {TYPE}     { printf("TYPE \t%s\n", yytext); }
 {RETURN}   { printf("RETURN \t%s\n", yytext); }
-{BREAK}    { printf("BREAK \t%s\n", yytext); }
-{CONTINUE} { printf("CONTINUE \t%s\n", yytext); }
 {IF}       { printf("IF \t%s\n", yytext); }
 {ELSE}     { printf("ELSE \t%s\n", yytext); }
 {WHILE}    { printf("WHILE \t%s\n", yytext); }
 {PLUS}     { printf("PLUS \t%s\n", yytext); }
 {MINUS}    { printf("MINUS \t%s\n", yytext); }
-{CONST}    { printf("CONST \t%s\n", yytext); }
 
 {INT}  {
         int value;
