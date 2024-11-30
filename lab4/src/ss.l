@@ -1,86 +1,75 @@
 %{
     #include <stdio.h>
+    #include "y.tab.h"
 %}
 
 %option yylineno
-%option header-file="lex.yy.h"
 
-TYPE int|float|void
-CONST const
-RETURN return
-IF if
-ELSE else
-WHILE while
-BREAK break
-CONTINUE continue
-PLUS \+
-MINUS -
-INT [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
-FLOAT   [0-9]+\.[0-9]*  
-ID [a-z_A-Z][a-zA-Z_0-9]*
-SPACE [ \t\r]*
-EOL \n
-SEMI ;
-COMMA ,
-ASSIGN =
-RELOP >|<|>=|<=|==|!=
-STAR \*
-DIV \/
-AND &&
-OR \|\|
-DOT \.
-NOT !
-LP \(
-RP \)
-LB \[
-RB \]
-LC \{
-RC \}
-ERROR .
+TYPE        int|float|void
+CONST       const
+RETURN      return
+IF          if
+ELSE        else
+WHILE       while
+BREAK       break
+CONTINUE    continue
+PLUS        \+
+MINUS       -
+INT         [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
+FLOAT       [0-9]+\.[0-9]*  
+ID          [a-z_A-Z][a-zA-Z_0-9]*
+SPACE       [ \t\r]*
+EOL         \n
+SEMI        ;
+COMMA       ,
+ASSIGN      =
+RELOP       >|<|>=|<=|==|!=
+STAR        \*
+DIV         \/
+AND         &&
+OR          \|\|
+NOT         !
+LP          \(
+RP          \)
+LB          \[
+RB          \]
+LC          \{
+RC          \}
 
 %%
 
 {SPACE}    { /* 忽略空白字符 */ }
 {EOL}      { /* 忽略换行符 */ }
 
-"//"  {
-      char c = input(); 
-      while (c != '\n') 
-      c = input(); 
-    }
+"//".* { }
 
-"/*"  {
-      char c = input(); 
-      while (c != '*' || (c = input()) != '/') 
-      c = input(); 
-    }
+"/*"([^\*]|(\*)*[^\*/])*(\*)*"*/" { }
 
-{SEMI}     { printf("SEMI \t%s\n", yytext); }
-{COMMA}    { printf("COMMA \t%s\n", yytext); }
-{ASSIGN}   { printf("ASSIGN \t%s\n", yytext); }
-{RELOP}    { printf("RELOP \t%s\n", yytext); }
-{STAR}     { printf("STAR \t%s\n", yytext); }
-{DIV}      { printf("DIV \t%s\n", yytext); }
-{AND}      { printf("AND \t%s\n", yytext); }
-{OR}       { printf("OR \t%s\n", yytext); }
-{DOT}      { printf("DOT \t%s\n", yytext); }
-{NOT}      { printf("NOT \t%s\n", yytext); }
-{LP}       { printf("LP \t%s\n", yytext); }
-{RP}       { printf("RP \t%s\n", yytext); }
-{LB}       { printf("LB \t%s\n", yytext); }
-{RB}       { printf("RB \t%s\n", yytext); }
-{LC}       { printf("LC \t%s\n", yytext); }
-{RC}       { printf("RC \t%s\n", yytext); }
-{TYPE}     { printf("TYPE \t%s\n", yytext); }
-{RETURN}   { printf("RETURN \t%s\n", yytext); }
-{BREAK}    { printf("BREAK \t%s\n", yytext); }
-{CONTINUE} { printf("CONTINUE \t%s\n", yytext); }
-{IF}       { printf("IF \t%s\n", yytext); }
-{ELSE}     { printf("ELSE \t%s\n", yytext); }
-{WHILE}    { printf("WHILE \t%s\n", yytext); }
-{PLUS}     { printf("PLUS \t%s\n", yytext); }
-{MINUS}    { printf("MINUS \t%s\n", yytext); }
-{CONST}    { printf("CONST \t%s\n", yytext); }
+{SEMI}     { return SEMICN; }
+{COMMA}    { return COMMA; }
+{ASSIGN}   { return ASSIGN; }
+{RELOP}    { return RELOP; }
+{STAR}     { return MUL; }
+{DIV}      { return DIV; }
+{AND}      { return AND; }
+{OR}       { return OR; }
+{NOT}      { return NOT; }
+{LP}       { return LP; }
+{RP}       { return RP; }
+{LB}       { return LB; }
+{RB}       { return RB; }
+{LC}       { return LC; }
+{RC}       { return RC; }
+{TYPE}     { return TYPE; }
+{RETURN}   { return RETURN; }
+{BREAK}    { return BREAK; }
+{CONTINUE} { return CONTINUE; }
+{IF}       { return IF; }
+{ELSE}     { return ELSE; }
+{WHILE}    { return WHILE; }
+{PLUS}     { return PLUS; }
+{MINUS}    { return MINUS; }
+{CONST}    { return CONST; }
 
 {INT}  {
         int value;
@@ -90,12 +79,12 @@ ERROR .
             sscanf(yytext, "%o", &value);
         else
             sscanf(yytext, "%d", &value);
-        printf("INT \t%d\n", value);
+        return INT_LIT;
     }
 
-{FLOAT}    { printf("FLOAT \t%s\n", yytext); }
-{ID}       { printf("ID \t%s\n", yytext); }
-{ERROR}    { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); }
+{FLOAT}    { return FLOAT_LIT; }
+{ID}       { return ID; }
+.          { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); }
 
 %%
 

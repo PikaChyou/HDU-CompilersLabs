@@ -1,256 +1,140 @@
 %{
+#include <stdio.h>
+#include <string.h>
+int yylex(void);
+void yyerror(char *);
 %}
 
 %union {
-    int intval;
-    float floatval;
-    char* id;
+    int int_val;
+    float float_val;
+    char *str_val;
 }
 
-%token <intval> INT
-%token <floatval> FLOAT
-%token <id> Ident
-%token <intval> IntConst
-%token <floatval> floatConst
+%token <str_val> ID
+%token <int_val> INT_LIT
+%token <float_val> FLOAT_LIT
 
-%token 
-    CONST VOID
-    IF ELSE WHILE BREAK CONTINUE RETURN
-    OR AND NOT
-    EQ NE
-    LT LE GT GE
-    ADD SUB
-    MUL DIV MOD
+%token <int_val> INT FLOAT VOID CONST RETURN IF ELSE WHILE BREAK CONTINUE LP RP LB RB LC RC COMMA SEMICN
+%token <int_val> MINUS NOT ASSIGN PLUS MUL DIV MOD AND OR EQ NE LT LE GT GE
+
+%nonassoc ELSE 
+
+%start Root
 
 %%
+Root: CompUnit;
+CompUnit: ConstDecl
+        | VarDecl
+        | FuncDef
+        | ConstDecl CompUnit
+        | VarDecl CompUnit
+        | FuncDef CompUnit;
 
-CompUnit
-    : CompUnit Decl
-    | CompUnit FuncDef
-    | Decl
-    | FuncDef
-    ;
+ConstDecl: CONST INT ConstDef SEMICN
+         | CONST FLOAT ConstDef SEMICN;
+ConstDef: ID ConstExpArray ASSIGN ConstInitVal
+        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef;
+ConstExpArray: 
+             | LB ConstExp RB ConstExpArray;
+ConstInitVal: ConstExp
+            | LC RC
+            | LC ConstInitVal RC
+            | LC ConstInitVal COMMA ConstInitVal RC;
+ConstExp: MulExp
+        | MulExp PLUS Exp
+        | MulExp MINUS Exp;
 
-Decl
-    : ConstDecl
-    | VarDecl
-    ;
+VarDecl: INT VarDef SEMICN
+       | FLOAT VarDef SEMICN;
+VarDef: ID ConstExpArray
+      | ID ConstExpArray ASSIGN InitVal
+      | ID ConstExpArray COMMA VarDef
+      | ID ConstExpArray ASSIGN InitVal COMMA VarDef;
+InitVal: Exp
+       | LC RC
+       | LC InitVals RC;
+InitVals: InitVal
+        | InitVal COMMA InitVals;
 
-ConstDecl
-    : CONST BType ConstDecls ';'
-    ;
+FuncDef: INT ID LP RP Block
+       | FLOAT ID LP RP Block
+       | VOID ID LP RP Block
+       | INT ID LP FuncFParam RP Block
+       | FLOAT ID LP FuncFParam RP Block
+       | VOID ID LP FuncFParam RP Block;
+FuncFParam: INT ID
+          | FLOAT ID
+          | INT ID LB RB ExpArray
+          | FLOAT ID LB RB ExpArray
+          | INT ID COMMA FuncFParam
+          | FLOAT ID COMMA FuncFParam
+          | INT ID LB RB ExpArray COMMA FuncFParam
+          | FLOAT ID LB RB ExpArray COMMA FuncFParam;
 
-ConstDecls
-    : ConstDef
-    | ConstDecls ',' ConstDef
-    ;
+Block: LC BlockItem RC;
+BlockItem: 
+         | ConstDecl BlockItem
+         | VarDecl BlockItem
+         | Stmt BlockItem;
 
-BType
-    : INT
-    | FLOAT
-    ;
-
-ConstDef
-    : Ident ConstArrayPart '=' ConstInitVal
-    ;
-
-ConstArrayPart
-    : /* empty */
-    | '[' ConstExp ']'
-    | '[' ConstExp ']' ConstArrayPart 
-    ;
-
-ConstInitVal
-    : ConstExp
-    | '{' '}'
-    | '{' ConstInitVals '}'
-    ;
-
-ConstInitVals
-    : ConstInitVal
-    | ConstInitVals ',' ConstInitVal
-    ;
-
-VarDecl
-    : BType VarDefs ';'
-    ;
-
-VarDefs
-    : VarDef
-    | VarDefs ',' VarDef
-    ;
-
-VarDef
-    : Ident VarArrayPart
-    | Ident VarArrayPart '=' InitVal
-    ;
-
-VarArrayPart
-    : '[' ConstExp ']'
-    | VarArrayPart '[' ConstExp ']'
-    ;
-
-InitVal
-    : Exp
-    | '{' InitVals '}'
-    ;
-
-InitVals
-    : /* empty */
-    | InitVal
-    | InitVals ',' InitVal
-    ;
-
-FuncDef
-    : FuncType Ident '(' ')' Block
-    | FuncType Ident '(' FuncFParams ')' Block
-    ;
-
-FuncType
-    : VOID
-    | INT
-    | FLOAT
-    ;
-
-FuncFParams
-    : FuncFParam
-    | FuncFParams ',' FuncFParam
-    ;
-
-FuncFParam
-    : BType Ident sub_FuncFParam
-    ;
-
-sub_FuncFParam
-    : /* empty */
-    | '[' ']' sub_2_FuncFParam
-    ;
-
-sub_2_FuncFParam
-    : /* empty */
-    | '[' Exp ']'
-    | sub_2_FuncFParam '[' Exp ']'
-    ;
-
-Block
-    : '{' '}'
-    | '{' BlockItems '}'
-    ;
-
-BlockItems
-    : BlockItems BlockItem
-    | BlockItem
-    ;
-
-BlockItem
-    : Decl
-    | Stmt
-    ;
-
-Stmt
-    : LVal '=' Exp ';'
-    | ';'
-    | Exp ';'
+Stmt: LVal ASSIGN Exp SEMICN
+    | Exp SEMICN
     | Block
-    | IF '(' Cond ')' Stmt ELSE Stmt
-    | IF '(' Cond ')' Stmt
-    | WHILE '(' Cond ')' Stmt
-    | BREAK ';'
-    | CONTINUE ';'
-    | RETURN Exp ';'
-    | RETURN ';'
-    ;
+    | IF LP Cond RP Stmt
+    | IF LP Cond RP Stmt ELSE Stmt
+    | WHILE LP Cond RP Stmt
+    | BREAK SEMICN
+    | CONTINUE SEMICN
+    | RETURN SEMICN
+    | RETURN Exp SEMICN;
 
-Exp
-    : AddExp
-    ;
+Exp: AddExp;
+AddExp: MulExp
+      | MulExp PLUS AddExp
+      | MulExp MINUS AddExp;
+MulExp: UnaryExp
+      | UnaryExp MUL MulExp
+      | UnaryExp DIV MulExp
+      | UnaryExp MOD MulExp;
+UnaryExp: PrimaryExp
+        | ID LP RP
+        | ID LP FuncRParams RP
+        | PLUS UnaryExp
+        | MINUS UnaryExp
+        | NOT UnaryExp;
+FuncRParams: Exp
+           | Exp COMMA FuncRParams;
+PrimaryExp: LP Exp RP
+          | LVal
+          | INT_LIT
+          | FLOAT_LIT;
+LVal: ID ExpArray;
 
-Cond
-    : LOrExp
-    ;
+Cond: LOrExp;
+LOrExp: LAndExp
+      | LAndExp OR LOrExp;
+LAndExp: EqExp
+       | EqExp AND LAndExp;
+EqExp: RelExp
+     | RelExp EQ EqExp
+     | RelExp NE EqExp;
+RelExp: AddExp
+      | AddExp LT RelExp
+      | AddExp GT RelExp
+      | AddExp LE RelExp
+      | AddExp GE RelExp;
 
-LVal
-    : Ident LValArrayPart
-    ;
-
-LValArrayPart
-    : /* empty */
-    | '[' Exp ']'
-    | LValArrayPart '[' Exp ']'
-    ;
-
-PrimaryExp
-    : '(' Exp ')'
-    | LVal
-    | Number
-    ;
-
-Number
-    : IntConst
-    | floatConst
-    ;
-
-UnaryExp
-    : PrimaryExp
-    | Ident '(' ')'
-    | Ident '(' FuncRParams ')'
-    | UnaryOp UnaryExp
-    ;
-
-UnaryOp
-    : ADD
-    | SUB
-    | NOT
-    ;
-
-FuncRParams
-    : Exp
-    | FuncRParams ',' Exp
-    ;
-
-MulExp
-    : UnaryExp
-    | MulExp MUL UnaryExp
-    | MulExp DIV UnaryExp
-    | MulExp MOD UnaryExp
-    ;
-
-AddExp
-    : MulExp
-    | AddExp ADD MulExp
-    | AddExp SUB MulExp
-    ;
-
-RelExp
-    : AddExp
-    | RelExp LT AddExp
-    | RelExp LE AddExp
-    | RelExp GT AddExp
-    | RelExp GE AddExp
-    ;
-
-EqExp
-    : RelExp
-    | EqExp EQ RelExp
-    | EqExp NE RelExp
-    ;
-
-LAndExp
-    : EqExp
-    | LAndExp AND EqExp
-    ;
-
-LOrExp
-    : LAndExp
-    | LOrExp OR LAndExp
-    ;
-
-ConstExp
-    : AddExp
-    ;
+ExpArray: 
+        | LB Exp RB ExpArray;
 
 %%
 
-void yyerror(char const *s){
-	fprintf (stderr, "%s/n", s);
-} 
+void yyerror(char *str){
+    fprintf(stderr,"error:%s\n",str);
+}
+
+int main()
+{
+    yyparse();
+}

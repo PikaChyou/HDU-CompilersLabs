@@ -2,7 +2,7 @@
 
 杭电编译原理实验作业（词法分析/语法分析）  
 采用 C++ 以及基本的 C++ STL 实现  
-利用Flex/Bison制作SysY2022编译器
+利用 Flex / Bison 制作 SysY2022 编译器
 
 ## Lab1
 
@@ -38,7 +38,7 @@ DFA 最小化部分基本由 Copilot 进行生成
 我們的教育的確有問題！  
 校方文档给出的预测分析表样例写错了
 
-## Lab4 SysY 编译器设计
+## Lab4 SysY 编译器设计 (正在建设)
 
 |项目|说明|
 |---|---|
@@ -47,4 +47,7 @@ DFA 最小化部分基本由 Copilot 进行生成
 |Flex|flex 2.6.4|
 |Bison|bison (GNU Bison) 3.8.2|
 
-[GNU/Bison](https://www.gnu.org/software/bison/manual/html_node/index.html)
+文档参考 => [GNU/Bison](https://www.gnu.org/software/bison/manual/html_node/index.html)  
+照抄 SysY2022 定义文档会产生巨多错误，需要进行调整  
+该部分参考了前人的智慧成果 => [kylinsoft/ex3-1-bison](https://github.com/kylinsoft/ex3-1-bison/blob/main/src/parser.y)  
+`IF-ELSE` 移进/规约冲突使用了 `%nonassoc` 声明非结合性来处理，不过 Bison 在生成输出文件时仍然会产生 warning，可以忽视
