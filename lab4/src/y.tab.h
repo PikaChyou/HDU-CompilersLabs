@@ -139,13 +139,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 8 "ss.y"
+#line 14 "ss.y"
 
     int int_val;
     float float_val;
     char *str_val;
+    struct Node *node_val;
 
-#line 149 "y.tab.h"
+#line 150 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -69,12 +69,18 @@
 /* First part of user prologue.  */
 #line 1 "ss.y"
 
+
 #include <stdio.h>
 #include <string.h>
+#include "cst.h"
+
 int yylex(void);
 void yyerror(char *);
 
-#line 78 "y.tab.c"
+node *root;
+
+
+#line 84 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -203,13 +209,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 8 "ss.y"
+#line 14 "ss.y"
 
     int int_val;
     float float_val;
     char *str_val;
+    struct Node *node_val;
 
-#line 213 "y.tab.c"
+#line 220 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -292,12 +299,12 @@ enum yysymbol_kind_t
   YYSYMBOL_FuncRParams = 60,               /* FuncRParams  */
   YYSYMBOL_PrimaryExp = 61,                /* PrimaryExp  */
   YYSYMBOL_LVal = 62,                      /* LVal  */
-  YYSYMBOL_ExpArray = 63,                  /* ExpArray  */
-  YYSYMBOL_Cond = 64,                      /* Cond  */
-  YYSYMBOL_LOrExp = 65,                    /* LOrExp  */
-  YYSYMBOL_LAndExp = 66,                   /* LAndExp  */
-  YYSYMBOL_EqExp = 67,                     /* EqExp  */
-  YYSYMBOL_RelExp = 68                     /* RelExp  */
+  YYSYMBOL_Cond = 63,                      /* Cond  */
+  YYSYMBOL_LOrExp = 64,                    /* LOrExp  */
+  YYSYMBOL_LAndExp = 65,                   /* LAndExp  */
+  YYSYMBOL_EqExp = 66,                     /* EqExp  */
+  YYSYMBOL_RelExp = 67,                    /* RelExp  */
+  YYSYMBOL_ExpArray = 68                   /* ExpArray  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -687,16 +694,16 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    27,    27,    29,    30,    31,    32,    33,    34,    37,
-      38,    40,    41,    43,    44,    46,    47,    48,    49,    51,
-      52,    53,    56,    57,    59,    60,    61,    62,    64,    65,
-      66,    68,    69,    72,    73,    74,    75,    76,    77,    79,
-      80,    81,    82,    83,    84,    85,    86,    89,    90,    91,
-      92,    93,    96,    97,    98,    99,   100,   101,   102,   103,
-     104,   105,   108,   109,   110,   111,   113,   114,   115,   116,
-     118,   119,   120,   121,   122,   123,   125,   126,   128,   129,
-     130,   131,   134,   135,   136,   139,   140,   141,   143,   144,
-     146,   147,   148,   150,   151,   152,   153,   154
+       0,    38,    38,    40,    41,    42,    43,    44,    45,    48,
+      49,    52,    53,    56,    57,    60,    61,    62,    63,    66,
+      67,    68,    71,    72,    75,    76,    77,    78,    81,    82,
+      83,    86,    87,    90,    91,    92,    93,    94,    95,    98,
+      99,   100,   101,   102,   103,   104,   105,   108,   110,   111,
+     112,   113,   116,   117,   118,   119,   120,   121,   122,   123,
+     124,   125,   128,   130,   131,   132,   135,   136,   137,   138,
+     141,   142,   143,   144,   145,   146,   149,   150,   153,   154,
+     155,   156,   159,   161,   163,   164,   167,   168,   171,   172,
+     173,   176,   177,   178,   179,   180,   183,   184
 };
 #endif
 
@@ -720,8 +727,8 @@ static const char *const yytname[] =
   "CompUnit", "ConstDecl", "ConstDef", "ConstExpArray", "ConstInitVal",
   "ConstExp", "VarDecl", "VarDef", "InitVal", "InitVals", "FuncDef",
   "FuncFParam", "Block", "BlockItem", "Stmt", "Exp", "AddExp", "MulExp",
-  "UnaryExp", "FuncRParams", "PrimaryExp", "LVal", "ExpArray", "Cond",
-  "LOrExp", "LAndExp", "EqExp", "RelExp", YY_NULLPTR
+  "UnaryExp", "FuncRParams", "PrimaryExp", "LVal", "Cond", "LOrExp",
+  "LAndExp", "EqExp", "RelExp", "ExpArray", YY_NULLPTR
 };
 
 static const char *
@@ -775,7 +782,7 @@ static const yytype_int8 yydefact[] =
        0,     0,     0,     0,     0,     0,     2,     3,     4,     5,
       13,     0,    13,     0,     0,     0,     0,     1,     6,     7,
        8,     0,     0,    24,    22,     0,    23,     0,    13,     0,
-       0,     0,     0,     0,     0,    83,    80,    81,     0,     0,
+       0,     0,     0,     0,     0,    96,    80,    81,     0,     0,
        0,     0,     0,    19,    66,    70,    79,     0,     0,     0,
        0,     0,     0,     0,     9,    10,    39,    40,    48,    33,
        0,     0,     0,    82,     0,    62,    63,    74,    75,    73,
@@ -784,14 +791,14 @@ static const yytype_int8 yydefact[] =
        0,     0,     0,     0,     0,     0,     0,    48,    48,    54,
        0,    48,     0,    79,    36,    71,    76,     0,     0,    78,
        0,     0,    14,    21,    20,    67,    68,    69,    29,    31,
-       0,     0,    37,    38,     0,    11,    15,    83,    43,    83,
-      44,    60,     0,     0,     0,    58,    59,    49,    50,    47,
-      51,    53,     0,     0,    72,    83,    65,    64,     0,    30,
-      27,    16,     0,     0,    41,    42,    61,    93,     0,    85,
-      86,    88,    90,     0,     0,    77,    84,    32,    17,     0,
+       0,     0,    37,    38,     0,    11,    15,    96,    43,    96,
+      44,    61,     0,     0,     0,    58,    59,    49,    50,    47,
+      51,    53,     0,     0,    72,    96,    65,    64,     0,    30,
+      27,    16,     0,     0,    41,    42,    60,    91,     0,    83,
+      84,    86,    88,     0,     0,    77,    97,    32,    17,     0,
       12,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,    52,     0,    45,    46,    94,    96,    95,
-      97,    55,    87,    89,    91,    92,    57,    18,     0,    56
+       0,     0,     0,    52,     0,    45,    46,    92,    94,    93,
+      95,    55,    85,    87,    89,    90,    57,    18,     0,    56
 };
 
 /* YYPGOTO[NTERM-NUM].  */
@@ -799,7 +806,7 @@ static const yytype_int16 yypgoto[] =
 {
     -172,  -172,   126,   -30,   -13,   -21,  -115,   244,   -28,     3,
      219,   120,  -172,   -23,   -25,   -11,  -171,   -16,   -96,   -22,
-     122,   127,  -172,   -57,  -111,   135,    93,    95,    -4,    77
+     122,   127,  -172,   -57,   135,    93,    95,    -4,    77,  -111
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -807,7 +814,7 @@ static const yytype_uint8 yydefgoto[] =
 {
        0,     5,     6,     7,    29,    23,   125,   126,     8,    11,
      119,   120,     9,    34,    99,   100,   101,   102,    65,    66,
-      44,   107,    45,    46,    63,   158,   159,   160,   161,   162
+      44,   107,    45,    46,   158,   159,   160,   161,   162,    63
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -887,7 +894,7 @@ static const yytype_int8 yystos[] =
       43,     6,     7,    17,    52,     3,     4,     5,    16,    24,
       25,    27,    46,    58,    59,    61,    62,    22,    26,    17,
       52,    17,    52,    44,    23,    23,     3,     3,    20,    53,
-      17,    16,    18,    63,    56,    57,    58,    59,    59,    59,
+      17,    16,    18,    68,    56,    57,    58,    59,    59,    59,
       19,    24,    27,    28,    29,    30,     3,    48,    20,    49,
       56,    53,    17,    53,    17,    26,    18,    22,    18,    22,
        6,     7,    10,    11,    13,    14,    15,    42,    47,    53,
@@ -896,11 +903,11 @@ static const yytype_int8 yystos[] =
       50,    22,    53,    53,    20,    45,    46,    19,    52,    19,
       52,    23,    56,    16,    16,    23,    23,    54,    54,    21,
       54,    23,    26,    22,    17,    19,    57,    57,    22,    21,
-      48,    21,    45,    22,    63,    63,    23,    57,    64,    65,
-      66,    67,    68,    64,    56,    60,    63,    50,    21,    22,
+      48,    21,    45,    22,    68,    68,    23,    57,    63,    64,
+      65,    66,    67,    63,    56,    60,    68,    50,    21,    22,
       43,    22,    22,    35,    36,    37,    38,    17,    32,    31,
-      33,    34,    17,    23,    45,    52,    52,    68,    68,    68,
-      68,    55,    65,    66,    67,    67,    55,    21,    12,    55
+      33,    34,    17,    23,    45,    52,    52,    67,    67,    67,
+      67,    55,    64,    65,    66,    66,    55,    21,    12,    55
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
@@ -914,8 +921,8 @@ static const yytype_int8 yyr1[] =
       54,    54,    55,    55,    55,    55,    55,    55,    55,    55,
       55,    55,    56,    57,    57,    57,    58,    58,    58,    58,
       59,    59,    59,    59,    59,    59,    60,    60,    61,    61,
-      61,    61,    62,    63,    63,    64,    65,    65,    66,    66,
-      67,    67,    67,    68,    68,    68,    68,    68
+      61,    61,    62,    63,    64,    64,    65,    65,    66,    66,
+      66,    67,    67,    67,    67,    67,    68,    68
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
@@ -927,10 +934,10 @@ static const yytype_int8 yyr2[] =
        3,     1,     3,     5,     5,     5,     6,     6,     6,     2,
        2,     5,     5,     4,     4,     7,     7,     3,     0,     2,
        2,     2,     4,     2,     1,     5,     7,     5,     2,     2,
-       2,     3,     1,     1,     3,     3,     1,     3,     3,     3,
+       3,     2,     1,     1,     3,     3,     1,     3,     3,     3,
        1,     3,     4,     2,     2,     2,     1,     3,     3,     1,
-       1,     1,     2,     0,     4,     1,     1,     3,     1,     3,
-       1,     3,     3,     1,     3,     3,     3,     3
+       1,     1,     2,     1,     1,     3,     1,     3,     1,     3,
+       3,     1,     3,     3,     3,     3,     0,     4
 };
 
 
@@ -1394,535 +1401,583 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Root: CompUnit  */
-#line 27 "ss.y"
-               { printf("CompUnit\n"); }
-#line 1400 "y.tab.c"
+#line 38 "ss.y"
+               { root = append(Root, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1407 "y.tab.c"
+    break;
+
+  case 3: /* CompUnit: ConstDecl  */
+#line 40 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1413 "y.tab.c"
+    break;
+
+  case 4: /* CompUnit: VarDecl  */
+#line 41 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1419 "y.tab.c"
+    break;
+
+  case 5: /* CompUnit: FuncDef  */
+#line 42 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1425 "y.tab.c"
+    break;
+
+  case 6: /* CompUnit: ConstDecl CompUnit  */
+#line 43 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1431 "y.tab.c"
+    break;
+
+  case 7: /* CompUnit: VarDecl CompUnit  */
+#line 44 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1437 "y.tab.c"
+    break;
+
+  case 8: /* CompUnit: FuncDef CompUnit  */
+#line 45 "ss.y"
+                                { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1443 "y.tab.c"
+    break;
+
+  case 9: /* ConstDecl: CONST INT ConstDef SEMICN  */
+#line 48 "ss.y"
+                                        { (yyval.node_val) = append(ConstDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Int); }
+#line 1449 "y.tab.c"
+    break;
+
+  case 10: /* ConstDecl: CONST FLOAT ConstDef SEMICN  */
+#line 49 "ss.y"
+                                        { (yyval.node_val) = append(ConstDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Float); }
+#line 1455 "y.tab.c"
     break;
 
   case 11: /* ConstDef: ID ConstExpArray ASSIGN ConstInitVal  */
-#line 40 "ss.y"
-                                                                { printf("ConstDef: %s\n",(yyvsp[-3].str_val)); }
-#line 1406 "y.tab.c"
+#line 52 "ss.y"
+                                                                { (yyval.node_val) = append(ConstDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), NonType); }
+#line 1461 "y.tab.c"
     break;
 
   case 12: /* ConstDef: ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef  */
-#line 41 "ss.y"
-                                                                { printf("ConstDef: %s\n",(yyvsp[-5].str_val)); }
-#line 1412 "y.tab.c"
+#line 53 "ss.y"
+                                                                { (yyval.node_val) = append(ConstDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); }
+#line 1467 "y.tab.c"
     break;
 
   case 13: /* ConstExpArray: %empty  */
-#line 43 "ss.y"
-               { printf("ConstExpArray\n"); }
-#line 1418 "y.tab.c"
+#line 56 "ss.y"
+                                                { (yyval.node_val) = NULL; }
+#line 1473 "y.tab.c"
     break;
 
   case 14: /* ConstExpArray: LB ConstExp RB ConstExpArray  */
-#line 44 "ss.y"
-                                            { printf("ConstExpArray\n"); }
-#line 1424 "y.tab.c"
+#line 57 "ss.y"
+                                                { (yyval.node_val) = append(ConstExpArray, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1479 "y.tab.c"
     break;
 
   case 15: /* ConstInitVal: ConstExp  */
-#line 46 "ss.y"
-                                                        { printf("ConstInitVal\n"); }
-#line 1430 "y.tab.c"
+#line 60 "ss.y"
+                                                        { (yyval.node_val) = append(ConstInitVal, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1485 "y.tab.c"
     break;
 
   case 16: /* ConstInitVal: LC RC  */
-#line 47 "ss.y"
-                                                        { printf("ConstInitVal\n"); }
-#line 1436 "y.tab.c"
+#line 61 "ss.y"
+                                                        { (yyval.node_val) = append(ConstInitVal, NULL, NULL, NULL, 0, 0, NULL, NonType); }
+#line 1491 "y.tab.c"
     break;
 
   case 17: /* ConstInitVal: LC ConstInitVal RC  */
-#line 48 "ss.y"
-                                                        { printf("ConstInitVal\n"); }
-#line 1442 "y.tab.c"
+#line 62 "ss.y"
+                                                        { (yyval.node_val) = append(ConstInitVal, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1497 "y.tab.c"
     break;
 
   case 18: /* ConstInitVal: LC ConstInitVal COMMA ConstInitVal RC  */
-#line 49 "ss.y"
-                                                        { printf("ConstInitVal\n"); }
-#line 1448 "y.tab.c"
+#line 63 "ss.y"
+                                                        { (yyval.node_val) = append(ConstInitVal, (yyvsp[-1].node_val), NULL, (yyvsp[-3].node_val), 0, 0, NULL, NonType); }
+#line 1503 "y.tab.c"
     break;
 
   case 19: /* ConstExp: MulExp  */
-#line 51 "ss.y"
-                 { printf("ConstExp\n"); }
-#line 1454 "y.tab.c"
+#line 66 "ss.y"
+                                { (yyval.node_val) = append(ConstExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1509 "y.tab.c"
     break;
 
   case 20: /* ConstExp: MulExp PLUS Exp  */
-#line 52 "ss.y"
-                          { printf("ConstExp\n"); }
-#line 1460 "y.tab.c"
+#line 67 "ss.y"
+                                { (yyval.node_val) = append(ConstExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), PLUS, 0, NULL, NonType); }
+#line 1515 "y.tab.c"
     break;
 
   case 21: /* ConstExp: MulExp MINUS Exp  */
-#line 53 "ss.y"
-                           { printf("ConstExp\n"); }
-#line 1466 "y.tab.c"
+#line 68 "ss.y"
+                                { (yyval.node_val) = append(ConstExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), MINUS, 0, NULL, NonType); }
+#line 1521 "y.tab.c"
     break;
 
   case 22: /* VarDecl: INT VarDef SEMICN  */
-#line 56 "ss.y"
-                           { printf("VarDecl\n"); }
-#line 1472 "y.tab.c"
+#line 71 "ss.y"
+                                { (yyval.node_val) = append(VarDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Int); }
+#line 1527 "y.tab.c"
     break;
 
   case 23: /* VarDecl: FLOAT VarDef SEMICN  */
-#line 57 "ss.y"
-                             { printf("VarDecl\n"); }
-#line 1478 "y.tab.c"
+#line 72 "ss.y"
+                                { (yyval.node_val) = append(VarDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Float); }
+#line 1533 "y.tab.c"
     break;
 
   case 24: /* VarDef: ID ConstExpArray  */
-#line 59 "ss.y"
-                                                        { printf("VarDef: %s\n",(yyvsp[-1].str_val)); }
-#line 1484 "y.tab.c"
+#line 75 "ss.y"
+                                                        { (yyval.node_val) = append(VarDef, NULL, (yyvsp[0].node_val), NULL, 0, 0, (yyvsp[-1].str_val), NonType); }
+#line 1539 "y.tab.c"
     break;
 
   case 25: /* VarDef: ID ConstExpArray ASSIGN InitVal  */
-#line 60 "ss.y"
-                                                        { printf("VarDef: %s\n",(yyvsp[-3].str_val)); }
-#line 1490 "y.tab.c"
+#line 76 "ss.y"
+                                                        { (yyval.node_val) = append(VarDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), NonType); }
+#line 1545 "y.tab.c"
     break;
 
   case 26: /* VarDef: ID ConstExpArray COMMA VarDef  */
-#line 61 "ss.y"
-                                                        { printf("VarDef: %s\n",(yyvsp[-3].str_val)); }
-#line 1496 "y.tab.c"
+#line 77 "ss.y"
+                                                        { (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-2].node_val), NULL, 0, 0, (yyvsp[-3].str_val), NonType); }
+#line 1551 "y.tab.c"
     break;
 
   case 27: /* VarDef: ID ConstExpArray ASSIGN InitVal COMMA VarDef  */
-#line 62 "ss.y"
-                                                        { printf("VarDef: %s\n",(yyvsp[-5].str_val)); }
-#line 1502 "y.tab.c"
+#line 78 "ss.y"
+                                                        { (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); }
+#line 1557 "y.tab.c"
     break;
 
   case 28: /* InitVal: Exp  */
-#line 64 "ss.y"
-             { printf("InitVal\n"); }
-#line 1508 "y.tab.c"
+#line 81 "ss.y"
+                        { (yyval.node_val) = append(InitVal, NULL, NULL, (yyvsp[0].node_val), Exp, 0, NULL, NonType); }
+#line 1563 "y.tab.c"
     break;
 
   case 29: /* InitVal: LC RC  */
-#line 65 "ss.y"
-               { printf("InitVal\n"); }
-#line 1514 "y.tab.c"
+#line 82 "ss.y"
+                        { (yyval.node_val) = append(InitVal, NULL, NULL, NULL, InitVals, 0, NULL, NonType); }
+#line 1569 "y.tab.c"
     break;
 
   case 30: /* InitVal: LC InitVals RC  */
-#line 66 "ss.y"
-                        { printf("InitVal\n"); }
-#line 1520 "y.tab.c"
+#line 83 "ss.y"
+                        { (yyval.node_val) = append(InitVal, NULL, NULL, (yyvsp[-1].node_val), InitVals, 0, NULL, NonType); }
+#line 1575 "y.tab.c"
     break;
 
   case 31: /* InitVals: InitVal  */
-#line 68 "ss.y"
-                  { printf("InitVals\n"); }
-#line 1526 "y.tab.c"
+#line 86 "ss.y"
+                                        { (yyval.node_val) = append(InitVals, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1581 "y.tab.c"
     break;
 
   case 32: /* InitVals: InitVal COMMA InitVals  */
-#line 69 "ss.y"
-                                 { printf("InitVals\n"); }
-#line 1532 "y.tab.c"
+#line 87 "ss.y"
+                                        { (yyval.node_val) = append(InitVals, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1587 "y.tab.c"
     break;
 
   case 33: /* FuncDef: INT ID LP RP Block  */
-#line 72 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: int\n", (yyvsp[-3].str_val)); }
-#line 1538 "y.tab.c"
+#line 90 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); }
+#line 1593 "y.tab.c"
     break;
 
   case 34: /* FuncDef: FLOAT ID LP RP Block  */
-#line 73 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: float\n", (yyvsp[-3].str_val)); }
-#line 1544 "y.tab.c"
+#line 91 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); }
+#line 1599 "y.tab.c"
     break;
 
   case 35: /* FuncDef: VOID ID LP RP Block  */
-#line 74 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: void\n", (yyvsp[-3].str_val)); }
-#line 1550 "y.tab.c"
+#line 92 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Void); }
+#line 1605 "y.tab.c"
     break;
 
   case 36: /* FuncDef: INT ID LP FuncFParam RP Block  */
-#line 75 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: int\n", (yyvsp[-4].str_val)); }
-#line 1556 "y.tab.c"
+#line 93 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Int); }
+#line 1611 "y.tab.c"
     break;
 
   case 37: /* FuncDef: FLOAT ID LP FuncFParam RP Block  */
-#line 76 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: float\n", (yyvsp[-4].str_val)); }
-#line 1562 "y.tab.c"
+#line 94 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Float); }
+#line 1617 "y.tab.c"
     break;
 
   case 38: /* FuncDef: VOID ID LP FuncFParam RP Block  */
-#line 77 "ss.y"
-                                                { printf("FuncDef: %s\n\tFuncType: void\n", (yyvsp[-4].str_val)); }
-#line 1568 "y.tab.c"
+#line 95 "ss.y"
+                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Void); }
+#line 1623 "y.tab.c"
     break;
 
   case 39: /* FuncFParam: INT ID  */
-#line 79 "ss.y"
-                   { printf("\tFuncFParam\n"); }
-#line 1574 "y.tab.c"
+#line 98 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Int); }
+#line 1629 "y.tab.c"
     break;
 
   case 40: /* FuncFParam: FLOAT ID  */
-#line 80 "ss.y"
-                     { printf("FuncFParam\n"); }
-#line 1580 "y.tab.c"
+#line 99 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Float); }
+#line 1635 "y.tab.c"
     break;
 
   case 41: /* FuncFParam: INT ID LB RB ExpArray  */
-#line 81 "ss.y"
-                                  { printf("FuncFParam\n"); }
-#line 1586 "y.tab.c"
+#line 100 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); }
+#line 1641 "y.tab.c"
     break;
 
   case 42: /* FuncFParam: FLOAT ID LB RB ExpArray  */
-#line 82 "ss.y"
-                                    { printf("FuncFParam\n"); }
-#line 1592 "y.tab.c"
+#line 101 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); }
+#line 1647 "y.tab.c"
     break;
 
   case 43: /* FuncFParam: INT ID COMMA FuncFParam  */
-#line 83 "ss.y"
-                                    { printf("FuncFParam\n"); }
-#line 1598 "y.tab.c"
+#line 102 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Int); }
+#line 1653 "y.tab.c"
     break;
 
   case 44: /* FuncFParam: FLOAT ID COMMA FuncFParam  */
-#line 84 "ss.y"
-                                      { printf("FuncFParam\n"); }
-#line 1604 "y.tab.c"
+#line 103 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Float); }
+#line 1659 "y.tab.c"
     break;
 
   case 45: /* FuncFParam: INT ID LB RB ExpArray COMMA FuncFParam  */
-#line 85 "ss.y"
-                                                   { printf("FuncFParam\n"); }
-#line 1610 "y.tab.c"
+#line 104 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Int); }
+#line 1665 "y.tab.c"
     break;
 
   case 46: /* FuncFParam: FLOAT ID LB RB ExpArray COMMA FuncFParam  */
-#line 86 "ss.y"
-                                                     { printf("FuncFParam\n"); }
-#line 1616 "y.tab.c"
+#line 105 "ss.y"
+                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Float); }
+#line 1671 "y.tab.c"
     break;
 
   case 47: /* Block: LC BlockItem RC  */
-#line 89 "ss.y"
-                       { printf("Block\n"); }
-#line 1622 "y.tab.c"
+#line 108 "ss.y"
+                       { (yyval.node_val) = append(Block, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1677 "y.tab.c"
     break;
 
   case 48: /* BlockItem: %empty  */
-#line 90 "ss.y"
-           { printf("BlockItem\n"); }
-#line 1628 "y.tab.c"
+#line 110 "ss.y"
+                                { (yyval.node_val) = NULL; }
+#line 1683 "y.tab.c"
     break;
 
   case 49: /* BlockItem: ConstDecl BlockItem  */
-#line 91 "ss.y"
-                               { printf("BlockItem\n"); }
-#line 1634 "y.tab.c"
+#line 111 "ss.y"
+                                { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1689 "y.tab.c"
     break;
 
   case 50: /* BlockItem: VarDecl BlockItem  */
-#line 92 "ss.y"
-                             { printf("BlockItem\n"); }
-#line 1640 "y.tab.c"
+#line 112 "ss.y"
+                                { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1695 "y.tab.c"
     break;
 
   case 51: /* BlockItem: Stmt BlockItem  */
-#line 93 "ss.y"
-                          { printf("BlockItem\n"); }
-#line 1646 "y.tab.c"
+#line 113 "ss.y"
+                                { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1701 "y.tab.c"
     break;
 
   case 52: /* Stmt: LVal ASSIGN Exp SEMICN  */
-#line 96 "ss.y"
-                             { printf("Stmt\n"); }
-#line 1652 "y.tab.c"
+#line 116 "ss.y"
+                                     { (yyval.node_val) = append(AssignStmt, (yyvsp[-1].node_val), NULL, (yyvsp[-3].node_val), 0, 0, NULL, NonType); }
+#line 1707 "y.tab.c"
     break;
 
   case 53: /* Stmt: Exp SEMICN  */
-#line 97 "ss.y"
-                 { printf("Stmt\n"); }
-#line 1658 "y.tab.c"
+#line 117 "ss.y"
+                                     { (yyval.node_val) = append(ExpStmt, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1713 "y.tab.c"
     break;
 
   case 54: /* Stmt: Block  */
-#line 98 "ss.y"
-            { printf("Stmt\n"); }
-#line 1664 "y.tab.c"
+#line 118 "ss.y"
+                                     { (yyval.node_val) = append(BlockStmt, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1719 "y.tab.c"
     break;
 
   case 55: /* Stmt: IF LP Cond RP Stmt  */
-#line 99 "ss.y"
-                         { printf("Stmt\n"); }
-#line 1670 "y.tab.c"
+#line 119 "ss.y"
+                                     { (yyval.node_val) = append(IfStmt, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1725 "y.tab.c"
     break;
 
   case 56: /* Stmt: IF LP Cond RP Stmt ELSE Stmt  */
-#line 100 "ss.y"
-                                   { printf("Stmt\n"); }
-#line 1676 "y.tab.c"
+#line 120 "ss.y"
+                                     { (yyval.node_val) = append(IfElseStmt, (yyvsp[0].node_val), (yyvsp[-2].node_val), (yyvsp[-4].node_val), 0, 0, NULL, NonType); }
+#line 1731 "y.tab.c"
     break;
 
   case 57: /* Stmt: WHILE LP Cond RP Stmt  */
-#line 101 "ss.y"
-                            { printf("Stmt\n"); }
-#line 1682 "y.tab.c"
+#line 121 "ss.y"
+                                     { (yyval.node_val) = append(WhileStmt, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1737 "y.tab.c"
     break;
 
   case 58: /* Stmt: BREAK SEMICN  */
-#line 102 "ss.y"
-                   { printf("Stmt\n"); }
-#line 1688 "y.tab.c"
+#line 122 "ss.y"
+                                     { (yyval.node_val) = append(BreakStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
+#line 1743 "y.tab.c"
     break;
 
   case 59: /* Stmt: CONTINUE SEMICN  */
-#line 103 "ss.y"
-                      { printf("Stmt\n"); }
-#line 1694 "y.tab.c"
+#line 123 "ss.y"
+                                     { (yyval.node_val) = append(ContinueStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
+#line 1749 "y.tab.c"
     break;
 
-  case 60: /* Stmt: RETURN SEMICN  */
-#line 104 "ss.y"
-                    { printf("Stmt\n"); }
-#line 1700 "y.tab.c"
+  case 60: /* Stmt: RETURN Exp SEMICN  */
+#line 124 "ss.y"
+                                     { (yyval.node_val) = append(ReturnStmt, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
+#line 1755 "y.tab.c"
     break;
 
-  case 61: /* Stmt: RETURN Exp SEMICN  */
-#line 105 "ss.y"
-                        { printf("Stmt\n"); }
-#line 1706 "y.tab.c"
+  case 61: /* Stmt: RETURN SEMICN  */
+#line 125 "ss.y"
+                                     { (yyval.node_val) = append(BlankReturnStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
+#line 1761 "y.tab.c"
     break;
 
   case 62: /* Exp: AddExp  */
-#line 108 "ss.y"
-            { printf("Exp\n"); }
-#line 1712 "y.tab.c"
+#line 128 "ss.y"
+                { (yyval.node_val) = append(Exp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1767 "y.tab.c"
     break;
 
   case 63: /* AddExp: MulExp  */
-#line 109 "ss.y"
-               { printf("AddExp\n"); }
-#line 1718 "y.tab.c"
+#line 130 "ss.y"
+                                { (yyval.node_val) = append(AddExp, NULL, NULL, (yyvsp[0].node_val), Mul, 0, NULL, NonType); }
+#line 1773 "y.tab.c"
     break;
 
   case 64: /* AddExp: MulExp PLUS AddExp  */
-#line 110 "ss.y"
-                           { printf("AddExp\n"); }
-#line 1724 "y.tab.c"
+#line 131 "ss.y"
+                                { (yyval.node_val) = append(AddExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Plus, 0, NULL, NonType); }
+#line 1779 "y.tab.c"
     break;
 
   case 65: /* AddExp: MulExp MINUS AddExp  */
-#line 111 "ss.y"
-                            { printf("AddExp\n"); }
-#line 1730 "y.tab.c"
+#line 132 "ss.y"
+                                { (yyval.node_val) = append(AddExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Minus, 0, NULL, NonType); }
+#line 1785 "y.tab.c"
     break;
 
   case 66: /* MulExp: UnaryExp  */
-#line 113 "ss.y"
-                 { printf("MulExp\n"); }
-#line 1736 "y.tab.c"
+#line 135 "ss.y"
+                                { (yyval.node_val) = append(MulExp, NULL, NULL, (yyvsp[0].node_val), UnaryExp, 0, NULL, NonType); }
+#line 1791 "y.tab.c"
     break;
 
   case 67: /* MulExp: UnaryExp MUL MulExp  */
-#line 114 "ss.y"
-                            { printf("MulExp\n"); }
-#line 1742 "y.tab.c"
+#line 136 "ss.y"
+                                { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Mul, 0, NULL, NonType); }
+#line 1797 "y.tab.c"
     break;
 
   case 68: /* MulExp: UnaryExp DIV MulExp  */
-#line 115 "ss.y"
-                            { printf("MulExp\n"); }
-#line 1748 "y.tab.c"
+#line 137 "ss.y"
+                                { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Div, 0, NULL, NonType); }
+#line 1803 "y.tab.c"
     break;
 
   case 69: /* MulExp: UnaryExp MOD MulExp  */
-#line 116 "ss.y"
-                            { printf("MulExp\n"); }
-#line 1754 "y.tab.c"
+#line 138 "ss.y"
+                                { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Mod, 0, NULL, NonType); }
+#line 1809 "y.tab.c"
     break;
 
   case 70: /* UnaryExp: PrimaryExp  */
-#line 118 "ss.y"
-                     { printf("UnaryExp\n"); }
-#line 1760 "y.tab.c"
+#line 141 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), PrimaryExp, 0, NULL, NonType); }
+#line 1815 "y.tab.c"
     break;
 
   case 71: /* UnaryExp: ID LP RP  */
-#line 119 "ss.y"
-                   { printf("UnaryExp\n"); }
-#line 1766 "y.tab.c"
+#line 142 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, NULL, FuncRParams, 0, (yyvsp[-2].str_val), NonType); }
+#line 1821 "y.tab.c"
     break;
 
   case 72: /* UnaryExp: ID LP FuncRParams RP  */
-#line 120 "ss.y"
-                               { printf("UnaryExp\n"); }
-#line 1772 "y.tab.c"
+#line 143 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[-1].node_val), FuncRParams, 0, (yyvsp[-3].str_val), NonType); }
+#line 1827 "y.tab.c"
     break;
 
   case 73: /* UnaryExp: PLUS UnaryExp  */
-#line 121 "ss.y"
-                        { printf("UnaryExp\n"); }
-#line 1778 "y.tab.c"
+#line 144 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), PLUS, 0, NULL, NonType); }
+#line 1833 "y.tab.c"
     break;
 
   case 74: /* UnaryExp: MINUS UnaryExp  */
-#line 122 "ss.y"
-                         { printf("UnaryExp\n"); }
-#line 1784 "y.tab.c"
+#line 145 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), MINUS, 0, NULL, NonType); }
+#line 1839 "y.tab.c"
     break;
 
   case 75: /* UnaryExp: NOT UnaryExp  */
-#line 123 "ss.y"
-                       { printf("UnaryExp\n"); }
-#line 1790 "y.tab.c"
+#line 146 "ss.y"
+                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), Not, 0, NULL, NonType); }
+#line 1845 "y.tab.c"
     break;
 
   case 76: /* FuncRParams: Exp  */
-#line 125 "ss.y"
-                 { printf("FuncRParams\n"); }
-#line 1796 "y.tab.c"
+#line 149 "ss.y"
+                                        { (yyval.node_val) = append(FuncRParams, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1851 "y.tab.c"
     break;
 
   case 77: /* FuncRParams: Exp COMMA FuncRParams  */
-#line 126 "ss.y"
-                                   { printf("FuncRParams\n"); }
-#line 1802 "y.tab.c"
+#line 150 "ss.y"
+                                        { (yyval.node_val) = append(FuncRParams, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1857 "y.tab.c"
     break;
 
   case 78: /* PrimaryExp: LP Exp RP  */
-#line 128 "ss.y"
-                      { printf("PrimaryExp\n"); }
-#line 1808 "y.tab.c"
+#line 153 "ss.y"
+                        { (yyval.node_val) = append(PrimaryExp, NULL, NULL, (yyvsp[-1].node_val), Exp, 0, NULL, NonType); }
+#line 1863 "y.tab.c"
     break;
 
   case 79: /* PrimaryExp: LVal  */
-#line 129 "ss.y"
-                 { printf("PrimaryExp\n"); }
-#line 1814 "y.tab.c"
+#line 154 "ss.y"
+                        { (yyval.node_val) = append(PrimaryExp, NULL, NULL, (yyvsp[0].node_val), LVal, 0, NULL, NonType); }
+#line 1869 "y.tab.c"
     break;
 
   case 80: /* PrimaryExp: INT_LIT  */
-#line 130 "ss.y"
-                    { printf("PrimaryExp\n"); }
-#line 1820 "y.tab.c"
+#line 155 "ss.y"
+                        { (yyval.node_val) = append(PrimaryExp, NULL, NULL, NULL, (yyvsp[0].int_val), 0, NULL, Int); }
+#line 1875 "y.tab.c"
     break;
 
   case 81: /* PrimaryExp: FLOAT_LIT  */
-#line 131 "ss.y"
-                      { printf("PrimaryExp\n"); }
-#line 1826 "y.tab.c"
+#line 156 "ss.y"
+                        { (yyval.node_val) = append(PrimaryExp, NULL, NULL, NULL, 0, (yyvsp[0].float_val), NULL, Float); }
+#line 1881 "y.tab.c"
     break;
 
   case 82: /* LVal: ID ExpArray  */
-#line 134 "ss.y"
-                  { printf("LVal\n"); }
-#line 1832 "y.tab.c"
+#line 159 "ss.y"
+                        { (yyval.node_val) = append(LVal, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-1].str_val), NonType); }
+#line 1887 "y.tab.c"
     break;
 
-  case 83: /* ExpArray: %empty  */
-#line 135 "ss.y"
-          { printf("ExpArray\n"); }
-#line 1838 "y.tab.c"
+  case 83: /* Cond: LOrExp  */
+#line 161 "ss.y"
+                        { (yyval.node_val) = append(Cond, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1893 "y.tab.c"
     break;
 
-  case 84: /* ExpArray: LB Exp RB ExpArray  */
-#line 136 "ss.y"
-                             { printf("ExpArray\n"); }
-#line 1844 "y.tab.c"
+  case 84: /* LOrExp: LAndExp  */
+#line 163 "ss.y"
+                                { (yyval.node_val) = append(Cond, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1899 "y.tab.c"
     break;
 
-  case 85: /* Cond: LOrExp  */
-#line 139 "ss.y"
-             { printf("Cond\n"); }
-#line 1850 "y.tab.c"
+  case 85: /* LOrExp: LAndExp OR LOrExp  */
+#line 164 "ss.y"
+                                { (yyval.node_val) = append(Cond, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), OR, 0, 0, NonType); }
+#line 1905 "y.tab.c"
     break;
 
-  case 86: /* LOrExp: LAndExp  */
-#line 140 "ss.y"
-                { printf("LOrExp\n"); }
-#line 1856 "y.tab.c"
+  case 86: /* LAndExp: EqExp  */
+#line 167 "ss.y"
+                                { (yyval.node_val) = append(LAndExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1911 "y.tab.c"
     break;
 
-  case 87: /* LOrExp: LAndExp OR LOrExp  */
-#line 141 "ss.y"
-                          { printf("LOrExp\n"); }
-#line 1862 "y.tab.c"
+  case 87: /* LAndExp: EqExp AND LAndExp  */
+#line 168 "ss.y"
+                                { (yyval.node_val) = append(LAndExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), AND, 0, NULL, NonType); }
+#line 1917 "y.tab.c"
     break;
 
-  case 88: /* LAndExp: EqExp  */
-#line 143 "ss.y"
-               { printf("LAndExp\n"); }
-#line 1868 "y.tab.c"
+  case 88: /* EqExp: RelExp  */
+#line 171 "ss.y"
+                        { (yyval.node_val) = append(EqExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1923 "y.tab.c"
     break;
 
-  case 89: /* LAndExp: EqExp AND LAndExp  */
-#line 144 "ss.y"
-                           { printf("LAndExp\n"); }
-#line 1874 "y.tab.c"
+  case 89: /* EqExp: RelExp EQ EqExp  */
+#line 172 "ss.y"
+                        { (yyval.node_val) = append(EqExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), EQ, 0, NULL, NonType); }
+#line 1929 "y.tab.c"
     break;
 
-  case 90: /* EqExp: RelExp  */
-#line 146 "ss.y"
-              { printf("EqExp\n"); }
-#line 1880 "y.tab.c"
+  case 90: /* EqExp: RelExp NE EqExp  */
+#line 173 "ss.y"
+                        { (yyval.node_val) = append(EqExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), NE, 0, NULL, NonType); }
+#line 1935 "y.tab.c"
     break;
 
-  case 91: /* EqExp: RelExp EQ EqExp  */
-#line 147 "ss.y"
-                       { printf("EqExp\n"); }
-#line 1886 "y.tab.c"
+  case 91: /* RelExp: AddExp  */
+#line 176 "ss.y"
+                         { (yyval.node_val) = append(RelExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
+#line 1941 "y.tab.c"
     break;
 
-  case 92: /* EqExp: RelExp NE EqExp  */
-#line 148 "ss.y"
-                       { printf("EqExp\n"); }
-#line 1892 "y.tab.c"
+  case 92: /* RelExp: AddExp LT RelExp  */
+#line 177 "ss.y"
+                         { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), LT, 0, NULL, NonType); }
+#line 1947 "y.tab.c"
     break;
 
-  case 93: /* RelExp: AddExp  */
-#line 150 "ss.y"
-               { printf("RelExp\n"); }
-#line 1898 "y.tab.c"
+  case 93: /* RelExp: AddExp GT RelExp  */
+#line 178 "ss.y"
+                         { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), GT, 0, NULL, NonType); }
+#line 1953 "y.tab.c"
     break;
 
-  case 94: /* RelExp: AddExp LT RelExp  */
-#line 151 "ss.y"
-                         { printf("RelExp\n"); }
-#line 1904 "y.tab.c"
+  case 94: /* RelExp: AddExp LE RelExp  */
+#line 179 "ss.y"
+                         { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), LE, 0, NULL, NonType); }
+#line 1959 "y.tab.c"
     break;
 
-  case 95: /* RelExp: AddExp GT RelExp  */
-#line 152 "ss.y"
-                         { printf("RelExp\n"); }
-#line 1910 "y.tab.c"
+  case 95: /* RelExp: AddExp GE RelExp  */
+#line 180 "ss.y"
+                         { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), GE, 0, NULL, NonType); }
+#line 1965 "y.tab.c"
     break;
 
-  case 96: /* RelExp: AddExp LE RelExp  */
-#line 153 "ss.y"
-                         { printf("RelExp\n"); }
-#line 1916 "y.tab.c"
+  case 96: /* ExpArray: %empty  */
+#line 183 "ss.y"
+                                { (yyval.node_val) = NULL; }
+#line 1971 "y.tab.c"
     break;
 
-  case 97: /* RelExp: AddExp GE RelExp  */
-#line 154 "ss.y"
-                         { printf("RelExp\n"); }
-#line 1922 "y.tab.c"
+  case 97: /* ExpArray: LB Exp RB ExpArray  */
+#line 184 "ss.y"
+                                { (yyval.node_val) = append(ExpArray, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
+#line 1977 "y.tab.c"
     break;
 
 
-#line 1926 "y.tab.c"
+#line 1981 "y.tab.c"
 
       default: break;
     }
@@ -2115,14 +2170,20 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 157 "ss.y"
+#line 187 "ss.y"
 
 
 void yyerror(char *str){
-    fprintf(stderr,"error:%s\n",str);
+    extern int yylineno; // 行号
+    extern char *yytext; // 当前文本
+    fprintf(stderr, "Error: %s at line %d, near '%s'\n", str, yylineno, yytext);
 }
 
 int main()
 {
+    printf("Parsing...\n");
     yyparse();
+    printf("Parsing finished.\n\n");
+    print_tree(root,0);
+    return 0;
 }

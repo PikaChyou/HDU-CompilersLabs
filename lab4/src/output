@@ -1,0 +1,40 @@
+Parsing...
+Parsing finished.
+
+Root
+CompUnit
+  FuncDef: main
+    Block
+      BlockItem
+        VarDecl
+          VarDef: i
+            InitVal
+              Exp
+                AddExp
+                  MulExp
+                    UnaryExp
+                      PrimaryExp
+                        Int: 1
+        BlockItem
+          AssignStmt
+            LVal: i
+            Exp
+              AddExp
+                MulExp
+                  UnaryExp
+                    PrimaryExp
+                      LVal: i
+                ExpType: +
+                AddExp
+                  MulExp
+                    UnaryExp
+                      PrimaryExp
+                        Int: 1
+          BlockItem
+            ReturnStmt
+              Exp
+                AddExp
+                  MulExp
+                    UnaryExp
+                      PrimaryExp
+                        Int: 0

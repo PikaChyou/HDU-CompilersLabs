@@ -78,8 +78,8 @@ Grammar
    56     | WHILE LP Cond RP Stmt
    57     | BREAK SEMICN
    58     | CONTINUE SEMICN
-   59     | RETURN SEMICN
-   60     | RETURN Exp SEMICN
+   59     | RETURN Exp SEMICN
+   60     | RETURN SEMICN
 
    61 Exp: AddExp
 
@@ -109,26 +109,26 @@ Grammar
 
    81 LVal: ID ExpArray
 
-   82 ExpArray: ε
-   83         | LB Exp RB ExpArray
+   82 Cond: LOrExp
 
-   84 Cond: LOrExp
+   83 LOrExp: LAndExp
+   84       | LAndExp OR LOrExp
 
-   85 LOrExp: LAndExp
-   86       | LAndExp OR LOrExp
+   85 LAndExp: EqExp
+   86        | EqExp AND LAndExp
 
-   87 LAndExp: EqExp
-   88        | EqExp AND LAndExp
+   87 EqExp: RelExp
+   88      | RelExp EQ EqExp
+   89      | RelExp NE EqExp
 
-   89 EqExp: RelExp
-   90      | RelExp EQ EqExp
-   91      | RelExp NE EqExp
+   90 RelExp: AddExp
+   91       | AddExp LT RelExp
+   92       | AddExp GT RelExp
+   93       | AddExp LE RelExp
+   94       | AddExp GE RelExp
 
-   92 RelExp: AddExp
-   93       | AddExp LT RelExp
-   94       | AddExp GT RelExp
-   95       | AddExp LE RelExp
-   96       | AddExp GE RelExp
+   95 ExpArray: ε
+   96         | LB Exp RB ExpArray
 
 
 Terminals, with rules where they appear
@@ -150,8 +150,8 @@ Terminals, with rules where they appear
     CONTINUE <int_val> (270) 58
     LP <int_val> (271) 32 33 34 35 36 37 54 55 56 70 71 77
     RP <int_val> (272) 32 33 34 35 36 37 54 55 56 70 71 77
-    LB <int_val> (273) 13 40 41 44 45 83
-    RB <int_val> (274) 13 40 41 44 45 83
+    LB <int_val> (273) 13 40 41 44 45 96
+    RB <int_val> (274) 13 40 41 44 45 96
     LC <int_val> (275) 15 16 17 28 29 46
     RC <int_val> (276) 15 16 17 28 29 46
     COMMA <int_val> (277) 11 17 25 26 31 42 43 44 45 76
@@ -163,107 +163,107 @@ Terminals, with rules where they appear
     MUL <int_val> (283) 66
     DIV <int_val> (284) 67
     MOD <int_val> (285) 68
-    AND <int_val> (286) 88
-    OR <int_val> (287) 86
-    EQ <int_val> (288) 90
-    NE <int_val> (289) 91
-    LT <int_val> (290) 93
-    LE <int_val> (291) 95
-    GT <int_val> (292) 94
-    GE <int_val> (293) 96
+    AND <int_val> (286) 86
+    OR <int_val> (287) 84
+    EQ <int_val> (288) 88
+    NE <int_val> (289) 89
+    LT <int_val> (290) 91
+    LE <int_val> (291) 93
+    GT <int_val> (292) 92
+    GE <int_val> (293) 94
 
 
 Nonterminals, with rules where they appear
 
     $accept (39)
         on left: 0
-    Root (40)
+    Root <node_val> (40)
         on left: 1
         on right: 0
-    CompUnit (41)
+    CompUnit <node_val> (41)
         on left: 2 3 4 5 6 7
         on right: 1 5 6 7
-    ConstDecl (42)
+    ConstDecl <node_val> (42)
         on left: 8 9
         on right: 2 5 48
-    ConstDef (43)
+    ConstDef <node_val> (43)
         on left: 10 11
         on right: 8 9 11
-    ConstExpArray (44)
+    ConstExpArray <node_val> (44)
         on left: 12 13
         on right: 10 11 13 23 24 25 26
-    ConstInitVal (45)
+    ConstInitVal <node_val> (45)
         on left: 14 15 16 17
         on right: 10 11 16 17
-    ConstExp (46)
+    ConstExp <node_val> (46)
         on left: 18 19 20
         on right: 13 14
-    VarDecl (47)
+    VarDecl <node_val> (47)
         on left: 21 22
         on right: 3 6 49
-    VarDef (48)
+    VarDef <node_val> (48)
         on left: 23 24 25 26
         on right: 21 22 25 26
-    InitVal (49)
+    InitVal <node_val> (49)
         on left: 27 28 29
         on right: 24 26 30 31
-    InitVals (50)
+    InitVals <node_val> (50)
         on left: 30 31
         on right: 29 31
-    FuncDef (51)
+    FuncDef <node_val> (51)
         on left: 32 33 34 35 36 37
         on right: 4 7
-    FuncFParam (52)
+    FuncFParam <node_val> (52)
         on left: 38 39 40 41 42 43 44 45
         on right: 35 36 37 42 43 44 45
-    Block (53)
+    Block <node_val> (53)
         on left: 46
         on right: 32 33 34 35 36 37 53
-    BlockItem (54)
+    BlockItem <node_val> (54)
         on left: 47 48 49 50
         on right: 46 48 49 50
-    Stmt (55)
+    Stmt <node_val> (55)
         on left: 51 52 53 54 55 56 57 58 59 60
         on right: 50 54 55 56
-    Exp (56)
+    Exp <node_val> (56)
         on left: 61
-        on right: 19 20 27 51 52 60 75 76 77 83
-    AddExp (57)
+        on right: 19 20 27 51 52 59 75 76 77 96
+    AddExp <node_val> (57)
         on left: 62 63 64
-        on right: 61 63 64 92 93 94 95 96
-    MulExp (58)
+        on right: 61 63 64 90 91 92 93 94
+    MulExp <node_val> (58)
         on left: 65 66 67 68
         on right: 18 19 20 62 63 64 66 67 68
-    UnaryExp (59)
+    UnaryExp <node_val> (59)
         on left: 69 70 71 72 73 74
         on right: 65 66 67 68 72 73 74
-    FuncRParams (60)
+    FuncRParams <node_val> (60)
         on left: 75 76
         on right: 71 76
-    PrimaryExp (61)
+    PrimaryExp <node_val> (61)
         on left: 77 78 79 80
         on right: 69
-    LVal (62)
+    LVal <node_val> (62)
         on left: 81
         on right: 51 78
-    ExpArray (63)
-        on left: 82 83
-        on right: 40 41 44 45 81 83
-    Cond (64)
-        on left: 84
+    Cond <node_val> (63)
+        on left: 82
         on right: 54 55 56
-    LOrExp (65)
+    LOrExp <node_val> (64)
+        on left: 83 84
+        on right: 82 84
+    LAndExp <node_val> (65)
         on left: 85 86
-        on right: 84 86
-    LAndExp (66)
-        on left: 87 88
-        on right: 85 86 88
-    EqExp (67)
-        on left: 89 90 91
-        on right: 87 88 90 91
-    RelExp (68)
-        on left: 92 93 94 95 96
-        on right: 89 90 91 93 94 95 96
+        on right: 83 84 86
+    EqExp <node_val> (66)
+        on left: 87 88 89
+        on right: 85 86 88 89
+    RelExp <node_val> (67)
+        on left: 90 91 92 93 94
+        on right: 87 88 89 91 92 93 94
+    ExpArray <node_val> (68)
+        on left: 95 96
+        on right: 40 41 44 45 81 96
 
 
 State 0
@@ -644,7 +644,7 @@ State 35
     LP  shift, and go to state 61
     LB  shift, and go to state 62
 
-    $default  reduce using rule 82 (ExpArray)
+    $default  reduce using rule 95 (ExpArray)
 
     ExpArray  go to state 63
 
@@ -970,7 +970,7 @@ State 61
 
 State 62
 
-   83 ExpArray: LB • Exp RB ExpArray
+   96 ExpArray: LB • Exp RB ExpArray
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -1320,8 +1320,8 @@ State 91
 
 State 92
 
-   59 Stmt: RETURN • SEMICN
-   60     | RETURN • Exp SEMICN
+   59 Stmt: RETURN • Exp SEMICN
+   60     | RETURN • SEMICN
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -1541,7 +1541,7 @@ State 107
 
 State 108
 
-   83 ExpArray: LB Exp • RB ExpArray
+   96 ExpArray: LB Exp • RB ExpArray
 
     RB  shift, and go to state 145
 
@@ -1728,7 +1728,7 @@ State 127
 
     LB  shift, and go to state 62
 
-    $default  reduce using rule 82 (ExpArray)
+    $default  reduce using rule 95 (ExpArray)
 
     ExpArray  go to state 154
 
@@ -1747,7 +1747,7 @@ State 129
 
     LB  shift, and go to state 62
 
-    $default  reduce using rule 82 (ExpArray)
+    $default  reduce using rule 95 (ExpArray)
 
     ExpArray  go to state 155
 
@@ -1761,14 +1761,14 @@ State 130
 
 State 131
 
-   59 Stmt: RETURN SEMICN •
+   60 Stmt: RETURN SEMICN •
 
-    $default  reduce using rule 59 (Stmt)
+    $default  reduce using rule 60 (Stmt)
 
 
 State 132
 
-   60 Stmt: RETURN Exp • SEMICN
+   59 Stmt: RETURN Exp • SEMICN
 
     SEMICN  shift, and go to state 156
 
@@ -1921,11 +1921,11 @@ State 144
 
 State 145
 
-   83 ExpArray: LB Exp RB • ExpArray
+   96 ExpArray: LB Exp RB • ExpArray
 
     LB  shift, and go to state 62
 
-    $default  reduce using rule 82 (ExpArray)
+    $default  reduce using rule 95 (ExpArray)
 
     ExpArray  go to state 166
 
@@ -2028,25 +2028,25 @@ State 155
 
 State 156
 
-   60 Stmt: RETURN Exp SEMICN •
+   59 Stmt: RETURN Exp SEMICN •
 
-    $default  reduce using rule 60 (Stmt)
+    $default  reduce using rule 59 (Stmt)
 
 
 State 157
 
-   92 RelExp: AddExp •
-   93       | AddExp • LT RelExp
-   94       | AddExp • GT RelExp
-   95       | AddExp • LE RelExp
-   96       | AddExp • GE RelExp
+   90 RelExp: AddExp •
+   91       | AddExp • LT RelExp
+   92       | AddExp • GT RelExp
+   93       | AddExp • LE RelExp
+   94       | AddExp • GE RelExp
 
     LT  shift, and go to state 173
     LE  shift, and go to state 174
     GT  shift, and go to state 175
     GE  shift, and go to state 176
 
-    $default  reduce using rule 92 (RelExp)
+    $default  reduce using rule 90 (RelExp)
 
 
 State 158
@@ -2059,41 +2059,41 @@ State 158
 
 State 159
 
-   84 Cond: LOrExp •
+   82 Cond: LOrExp •
 
-    $default  reduce using rule 84 (Cond)
+    $default  reduce using rule 82 (Cond)
 
 
 State 160
 
-   85 LOrExp: LAndExp •
-   86       | LAndExp • OR LOrExp
+   83 LOrExp: LAndExp •
+   84       | LAndExp • OR LOrExp
 
     OR  shift, and go to state 178
 
-    $default  reduce using rule 85 (LOrExp)
+    $default  reduce using rule 83 (LOrExp)
 
 
 State 161
 
-   87 LAndExp: EqExp •
-   88        | EqExp • AND LAndExp
+   85 LAndExp: EqExp •
+   86        | EqExp • AND LAndExp
 
     AND  shift, and go to state 179
 
-    $default  reduce using rule 87 (LAndExp)
+    $default  reduce using rule 85 (LAndExp)
 
 
 State 162
 
-   89 EqExp: RelExp •
-   90      | RelExp • EQ EqExp
-   91      | RelExp • NE EqExp
+   87 EqExp: RelExp •
+   88      | RelExp • EQ EqExp
+   89      | RelExp • NE EqExp
 
     EQ  shift, and go to state 180
     NE  shift, and go to state 181
 
-    $default  reduce using rule 89 (EqExp)
+    $default  reduce using rule 87 (EqExp)
 
 
 State 163
@@ -2119,9 +2119,9 @@ State 165
 
 State 166
 
-   83 ExpArray: LB Exp RB ExpArray •
+   96 ExpArray: LB Exp RB ExpArray •
 
-    $default  reduce using rule 83 (ExpArray)
+    $default  reduce using rule 96 (ExpArray)
 
 
 State 167
@@ -2188,7 +2188,7 @@ State 172
 
 State 173
 
-   93 RelExp: AddExp LT • RelExp
+   91 RelExp: AddExp LT • RelExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2208,7 +2208,7 @@ State 173
 
 State 174
 
-   95 RelExp: AddExp LE • RelExp
+   93 RelExp: AddExp LE • RelExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2228,7 +2228,7 @@ State 174
 
 State 175
 
-   94 RelExp: AddExp GT • RelExp
+   92 RelExp: AddExp GT • RelExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2248,7 +2248,7 @@ State 175
 
 State 176
 
-   96 RelExp: AddExp GE • RelExp
+   94 RelExp: AddExp GE • RelExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2297,7 +2297,7 @@ State 177
 
 State 178
 
-   86 LOrExp: LAndExp OR • LOrExp
+   84 LOrExp: LAndExp OR • LOrExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2320,7 +2320,7 @@ State 178
 
 State 179
 
-   88 LAndExp: EqExp AND • LAndExp
+   86 LAndExp: EqExp AND • LAndExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2342,7 +2342,7 @@ State 179
 
 State 180
 
-   90 EqExp: RelExp EQ • EqExp
+   88 EqExp: RelExp EQ • EqExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2363,7 +2363,7 @@ State 180
 
 State 181
 
-   91 EqExp: RelExp NE • EqExp
+   89 EqExp: RelExp NE • EqExp
 
     ID         shift, and go to state 35
     INT_LIT    shift, and go to state 36
@@ -2440,30 +2440,30 @@ State 186
 
 State 187
 
-   93 RelExp: AddExp LT RelExp •
+   91 RelExp: AddExp LT RelExp •
 
-    $default  reduce using rule 93 (RelExp)
+    $default  reduce using rule 91 (RelExp)
 
 
 State 188
 
-   95 RelExp: AddExp LE RelExp •
+   93 RelExp: AddExp LE RelExp •
 
-    $default  reduce using rule 95 (RelExp)
+    $default  reduce using rule 93 (RelExp)
 
 
 State 189
 
-   94 RelExp: AddExp GT RelExp •
+   92 RelExp: AddExp GT RelExp •
 
-    $default  reduce using rule 94 (RelExp)
+    $default  reduce using rule 92 (RelExp)
 
 
 State 190
 
-   96 RelExp: AddExp GE RelExp •
+   94 RelExp: AddExp GE RelExp •
 
-    $default  reduce using rule 96 (RelExp)
+    $default  reduce using rule 94 (RelExp)
 
 
 State 191
@@ -2479,30 +2479,30 @@ State 191
 
 State 192
 
-   86 LOrExp: LAndExp OR LOrExp •
+   84 LOrExp: LAndExp OR LOrExp •
 
-    $default  reduce using rule 86 (LOrExp)
+    $default  reduce using rule 84 (LOrExp)
 
 
 State 193
 
-   88 LAndExp: EqExp AND LAndExp •
+   86 LAndExp: EqExp AND LAndExp •
 
-    $default  reduce using rule 88 (LAndExp)
+    $default  reduce using rule 86 (LAndExp)
 
 
 State 194
 
-   90 EqExp: RelExp EQ EqExp •
+   88 EqExp: RelExp EQ EqExp •
 
-    $default  reduce using rule 90 (EqExp)
+    $default  reduce using rule 88 (EqExp)
 
 
 State 195
 
-   91 EqExp: RelExp NE EqExp •
+   89 EqExp: RelExp NE EqExp •
 
-    $default  reduce using rule 91 (EqExp)
+    $default  reduce using rule 89 (EqExp)
 
 
 State 196
