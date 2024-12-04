@@ -1,18 +1,26 @@
 LEX = flex
+YACC = bison
 CC = gcc
+
 LEX_FILE = ss.l
+YACC_FILE = ss.y
+
 LEX_OUTPUT = lex.yy.c
-LEX_HEADER = lex.yy.h
-MAIN_FILE = main.c
+YACC_OUTPUT = y.tab.c
+YACC_HEADER = y.tab.h
+
 EXEC = ss
 
 all: $(EXEC)
 
-$(LEX_OUTPUT) $(LEX_HEADER): $(LEX_FILE)
+$(LEX_OUTPUT): $(LEX_FILE)
 	$(LEX) $(LEX_FILE)
 
-$(EXEC): $(LEX_OUTPUT) $(MAIN_FILE)
-	$(CC) -o $(EXEC) $(LEX_OUTPUT) $(MAIN_FILE) -lfl
+$(YACC_OUTPUT) $(YACC_HEADER): $(YACC_FILE)
+	$(YACC) -vdty $(YACC_FILE)
+
+$(EXEC): $(LEX_OUTPUT) $(YACC_OUTPUT)
+	$(CC) -o $(EXEC) $(LEX_OUTPUT) $(YACC_OUTPUT) -lfl
 
 clean:
-	rm -f $(LEX_OUTPUT) $(LEX_HEADER) $(EXEC)
+	rm -f $(LEX_OUTPUT) $(YACC_OUTPUT) $(YACC_HEADER) $(EXEC)

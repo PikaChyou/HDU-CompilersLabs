@@ -74,7 +74,7 @@ extern int yydebug;
     LC = 275,                      /* LC  */
     RC = 276,                      /* RC  */
     COMMA = 277,                   /* COMMA  */
-    SEMICOLON = 278,               /* SEMICOLON  */
+    SEMICN = 278,                  /* SEMICN  */
     MINUS = 279,                   /* MINUS  */
     NOT = 280,                     /* NOT  */
     ASSIGN = 281,                  /* ASSIGN  */
@@ -118,7 +118,7 @@ extern int yydebug;
 #define LC 275
 #define RC 276
 #define COMMA 277
-#define SEMICOLON 278
+#define SEMICN 278
 #define MINUS 279
 #define NOT 280
 #define ASSIGN 281
@@ -139,7 +139,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 4 "ss.y"
+#line 8 "ss.y"
 
     int int_val;
     float float_val;

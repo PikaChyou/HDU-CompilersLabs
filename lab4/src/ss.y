@@ -23,110 +23,136 @@ void yyerror(char *);
 %start Root
 
 %%
-Root: CompUnit;
+
+Root: CompUnit { printf("CompUnit\n"); };
+
 CompUnit: ConstDecl
         | VarDecl
         | FuncDef
         | ConstDecl CompUnit
         | VarDecl CompUnit
-        | FuncDef CompUnit;
+        | FuncDef CompUnit
+        ;
 
 ConstDecl: CONST INT ConstDef SEMICN
-         | CONST FLOAT ConstDef SEMICN;
-ConstDef: ID ConstExpArray ASSIGN ConstInitVal
-        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef;
-ConstExpArray: 
-             | LB ConstExp RB ConstExpArray;
-ConstInitVal: ConstExp
-            | LC RC
-            | LC ConstInitVal RC
-            | LC ConstInitVal COMMA ConstInitVal RC;
-ConstExp: MulExp
-        | MulExp PLUS Exp
-        | MulExp MINUS Exp;
+         | CONST FLOAT ConstDef SEMICN
+         ;
+ConstDef: ID ConstExpArray ASSIGN ConstInitVal                  { printf("ConstDef: %s\n",$1); }
+        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef   { printf("ConstDef: %s\n",$1); }
+        ;
+ConstExpArray: { printf("ConstExpArray\n"); }
+             | LB ConstExp RB ConstExpArray { printf("ConstExpArray\n"); }
+             ;
+ConstInitVal: ConstExp                                  { printf("ConstInitVal\n"); }
+            | LC RC                                     { printf("ConstInitVal\n"); }
+            | LC ConstInitVal RC                        { printf("ConstInitVal\n"); }
+            | LC ConstInitVal COMMA ConstInitVal RC     { printf("ConstInitVal\n"); }
+            ;
+ConstExp: MulExp { printf("ConstExp\n"); }
+        | MulExp PLUS Exp { printf("ConstExp\n"); }
+        | MulExp MINUS Exp { printf("ConstExp\n"); }
+        ;
 
-VarDecl: INT VarDef SEMICN
-       | FLOAT VarDef SEMICN;
-VarDef: ID ConstExpArray
-      | ID ConstExpArray ASSIGN InitVal
-      | ID ConstExpArray COMMA VarDef
-      | ID ConstExpArray ASSIGN InitVal COMMA VarDef;
-InitVal: Exp
-       | LC RC
-       | LC InitVals RC;
-InitVals: InitVal
-        | InitVal COMMA InitVals;
+VarDecl: INT VarDef SEMICN { printf("VarDecl\n"); }
+       | FLOAT VarDef SEMICN { printf("VarDecl\n"); }
+       ;
+VarDef: ID ConstExpArray                                { printf("VarDef: %s\n",$1); }
+      | ID ConstExpArray ASSIGN InitVal                 { printf("VarDef: %s\n",$1); }
+      | ID ConstExpArray COMMA VarDef                   { printf("VarDef: %s\n",$1); }
+      | ID ConstExpArray ASSIGN InitVal COMMA VarDef    { printf("VarDef: %s\n",$1); }
+      ;
+InitVal: Exp { printf("InitVal\n"); }
+       | LC RC { printf("InitVal\n"); }
+       | LC InitVals RC { printf("InitVal\n"); }
+       ;
+InitVals: InitVal { printf("InitVals\n"); }
+        | InitVal COMMA InitVals { printf("InitVals\n"); }
+        ;
 
-FuncDef: INT ID LP RP Block
-       | FLOAT ID LP RP Block
-       | VOID ID LP RP Block
-       | INT ID LP FuncFParam RP Block
-       | FLOAT ID LP FuncFParam RP Block
-       | VOID ID LP FuncFParam RP Block;
-FuncFParam: INT ID
-          | FLOAT ID
-          | INT ID LB RB ExpArray
-          | FLOAT ID LB RB ExpArray
-          | INT ID COMMA FuncFParam
-          | FLOAT ID COMMA FuncFParam
-          | INT ID LB RB ExpArray COMMA FuncFParam
-          | FLOAT ID LB RB ExpArray COMMA FuncFParam;
+FuncDef: INT ID LP RP Block                     { printf("FuncDef: %s\n\tFuncType: int\n", $2); }
+       | FLOAT ID LP RP Block                   { printf("FuncDef: %s\n\tFuncType: float\n", $2); }
+       | VOID ID LP RP Block                    { printf("FuncDef: %s\n\tFuncType: void\n", $2); }
+       | INT ID LP FuncFParam RP Block          { printf("FuncDef: %s\n\tFuncType: int\n", $2); }
+       | FLOAT ID LP FuncFParam RP Block        { printf("FuncDef: %s\n\tFuncType: float\n", $2); }
+       | VOID ID LP FuncFParam RP Block         { printf("FuncDef: %s\n\tFuncType: void\n", $2); }
+       ;
+FuncFParam: INT ID { printf("\tFuncFParam\n"); }
+          | FLOAT ID { printf("FuncFParam\n"); }
+          | INT ID LB RB ExpArray { printf("FuncFParam\n"); }
+          | FLOAT ID LB RB ExpArray { printf("FuncFParam\n"); }
+          | INT ID COMMA FuncFParam { printf("FuncFParam\n"); }
+          | FLOAT ID COMMA FuncFParam { printf("FuncFParam\n"); }
+          | INT ID LB RB ExpArray COMMA FuncFParam { printf("FuncFParam\n"); }
+          | FLOAT ID LB RB ExpArray COMMA FuncFParam { printf("FuncFParam\n"); }
+          ;
 
-Block: LC BlockItem RC;
-BlockItem: 
-         | ConstDecl BlockItem
-         | VarDecl BlockItem
-         | Stmt BlockItem;
+Block: LC BlockItem RC                  { printf("Block\n"); };
+BlockItem:                              { printf("BlockItem\n"); }
+         | ConstDecl BlockItem          { printf("BlockItem\n"); }
+         | VarDecl BlockItem            { printf("BlockItem\n"); }
+         | Stmt BlockItem               { printf("BlockItem\n"); }
+         ;
 
-Stmt: LVal ASSIGN Exp SEMICN
-    | Exp SEMICN
-    | Block
-    | IF LP Cond RP Stmt
-    | IF LP Cond RP Stmt ELSE Stmt
-    | WHILE LP Cond RP Stmt
-    | BREAK SEMICN
-    | CONTINUE SEMICN
-    | RETURN SEMICN
-    | RETURN Exp SEMICN;
+Stmt: LVal ASSIGN Exp SEMICN { printf("Stmt\n"); }
+    | Exp SEMICN { printf("Stmt\n"); }
+    | Block { printf("Stmt\n"); }
+    | IF LP Cond RP Stmt { printf("Stmt\n"); }
+    | IF LP Cond RP Stmt ELSE Stmt { printf("Stmt\n"); }
+    | WHILE LP Cond RP Stmt { printf("Stmt\n"); }
+    | BREAK SEMICN { printf("Stmt\n"); }
+    | CONTINUE SEMICN { printf("Stmt\n"); }
+    | RETURN SEMICN { printf("Stmt\n"); }
+    | RETURN Exp SEMICN { printf("Stmt\n"); }
+    ;
 
-Exp: AddExp;
-AddExp: MulExp
-      | MulExp PLUS AddExp
-      | MulExp MINUS AddExp;
-MulExp: UnaryExp
-      | UnaryExp MUL MulExp
-      | UnaryExp DIV MulExp
-      | UnaryExp MOD MulExp;
-UnaryExp: PrimaryExp
-        | ID LP RP
-        | ID LP FuncRParams RP
-        | PLUS UnaryExp
-        | MINUS UnaryExp
-        | NOT UnaryExp;
-FuncRParams: Exp
-           | Exp COMMA FuncRParams;
-PrimaryExp: LP Exp RP
-          | LVal
-          | INT_LIT
-          | FLOAT_LIT;
-LVal: ID ExpArray;
+Exp: AddExp { printf("Exp\n"); };        
+AddExp: MulExp { printf("AddExp\n"); }
+      | MulExp PLUS AddExp { printf("AddExp\n"); }
+      | MulExp MINUS AddExp { printf("AddExp\n"); }
+      ;
+MulExp: UnaryExp { printf("MulExp\n"); }
+      | UnaryExp MUL MulExp { printf("MulExp\n"); }
+      | UnaryExp DIV MulExp { printf("MulExp\n"); }
+      | UnaryExp MOD MulExp { printf("MulExp\n"); }
+      ;
+UnaryExp: PrimaryExp { printf("UnaryExp\n"); }
+        | ID LP RP { printf("UnaryExp\n"); }
+        | ID LP FuncRParams RP { printf("UnaryExp\n"); }
+        | PLUS UnaryExp { printf("UnaryExp\n"); }
+        | MINUS UnaryExp { printf("UnaryExp\n"); }
+        | NOT UnaryExp { printf("UnaryExp\n"); }
+        ;
+FuncRParams: Exp { printf("FuncRParams\n"); }
+           | Exp COMMA FuncRParams { printf("FuncRParams\n"); }
+           ;
+PrimaryExp: LP Exp RP { printf("PrimaryExp\n"); }
+          | LVal { printf("PrimaryExp\n"); }
+          | INT_LIT { printf("PrimaryExp\n"); }
+          | FLOAT_LIT { printf("PrimaryExp\n"); }
+          ;
 
-Cond: LOrExp;
-LOrExp: LAndExp
-      | LAndExp OR LOrExp;
-LAndExp: EqExp
-       | EqExp AND LAndExp;
-EqExp: RelExp
-     | RelExp EQ EqExp
-     | RelExp NE EqExp;
-RelExp: AddExp
-      | AddExp LT RelExp
-      | AddExp GT RelExp
-      | AddExp LE RelExp
-      | AddExp GE RelExp;
+LVal: ID ExpArray { printf("LVal\n"); };
+ExpArray: { printf("ExpArray\n"); }
+        | LB Exp RB ExpArray { printf("ExpArray\n"); }
+        ;
 
-ExpArray: 
-        | LB Exp RB ExpArray;
+Cond: LOrExp { printf("Cond\n"); };
+LOrExp: LAndExp { printf("LOrExp\n"); }
+      | LAndExp OR LOrExp { printf("LOrExp\n"); }
+      ;
+LAndExp: EqExp { printf("LAndExp\n"); }
+       | EqExp AND LAndExp { printf("LAndExp\n"); }
+       ;
+EqExp: RelExp { printf("EqExp\n"); }
+     | RelExp EQ EqExp { printf("EqExp\n"); }
+     | RelExp NE EqExp { printf("EqExp\n"); }
+     ;
+RelExp: AddExp { printf("RelExp\n"); }
+      | AddExp LT RelExp { printf("RelExp\n"); }
+      | AddExp GT RelExp { printf("RelExp\n"); }
+      | AddExp LE RelExp { printf("RelExp\n"); }
+      | AddExp GE RelExp { printf("RelExp\n"); }
+      ;
 
 %%
 

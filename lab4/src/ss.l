@@ -5,7 +5,9 @@
 
 %option yylineno
 
-TYPE        int|float|void
+INT         int
+FLOAT       float
+VOID        void
 CONST       const
 RETURN      return
 IF          if
@@ -15,15 +17,20 @@ BREAK       break
 CONTINUE    continue
 PLUS        \+
 MINUS       -
-INT         [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
-FLOAT       [0-9]+\.[0-9]*  
+INT_LIT     [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
+FLOAT_LIT   [0-9]+\.[0-9]*  
 ID          [a-z_A-Z][a-zA-Z_0-9]*
 SPACE       [ \t\r]*
 EOL         \n
-SEMI        ;
+SEMICN      ;
 COMMA       ,
 ASSIGN      =
-RELOP       >|<|>=|<=|==|!=
+EQ          ==
+NE          !=
+LT          <
+LE          <=
+GT          >
+GE          >=
 STAR        \*
 DIV         \/
 AND         &&
@@ -45,10 +52,18 @@ RC          \}
 
 "/*"([^\*]|(\*)*[^\*/])*(\*)*"*/" { }
 
-{SEMI}     { return SEMICN; }
+{INT}      { return INT; }
+{FLOAT}    { return FLOAT; }
+{VOID}     { return VOID; }
+{SEMICN}   { return SEMICN; }
 {COMMA}    { return COMMA; }
 {ASSIGN}   { return ASSIGN; }
-{RELOP}    { return RELOP; }
+{EQ}       { return EQ; }
+{NE}       { return NE; }
+{LT}       { return LT; }
+{LE}       { return LE; }
+{GT}       { return GT; }
+{GE}       { return GE; }
 {STAR}     { return MUL; }
 {DIV}      { return DIV; }
 {AND}      { return AND; }
@@ -60,7 +75,6 @@ RC          \}
 {RB}       { return RB; }
 {LC}       { return LC; }
 {RC}       { return RC; }
-{TYPE}     { return TYPE; }
 {RETURN}   { return RETURN; }
 {BREAK}    { return BREAK; }
 {CONTINUE} { return CONTINUE; }
@@ -71,7 +85,7 @@ RC          \}
 {MINUS}    { return MINUS; }
 {CONST}    { return CONST; }
 
-{INT}  {
+{INT_LIT}  {
         int value;
         if (yytext[0] == '0' && (yytext[1] == 'x' || yytext[1] == 'X'))
             sscanf(yytext, "%x", &value);
@@ -79,11 +93,12 @@ RC          \}
             sscanf(yytext, "%o", &value);
         else
             sscanf(yytext, "%d", &value);
+        yylval.int_val = value;
         return INT_LIT;
     }
 
-{FLOAT}    { return FLOAT_LIT; }
-{ID}       { return ID; }
+{FLOAT_LIT}  { yylval.float_val = atof(yytext); return FLOAT_LIT; }
+{ID}       { yylval.str_val = strdup(yytext); return ID; }
 .          { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); }
 
 %%
