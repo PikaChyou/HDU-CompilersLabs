@@ -3,9 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "cst.h"
+#include "lex.yy.h"
 
 int yylex(void);
-void yyerror(char *);
+void yyerror(const char *);
 
 node *root;
 
@@ -186,17 +187,39 @@ ExpArray: /* empty */           { $$ = NULL; }
 
 %%
 
-void yyerror(char *str){
-    extern int yylineno; // 行号
-    extern char *yytext; // 当前文本
-    fprintf(stderr, "Error: %s at line %d, near '%s'\n", str, yylineno, yytext);
+void yyerror(const char *s)
+{
+    extern int yylineno;
+    extern char *yytext;
+    extern int yychar;
+    /* if(s!="syntax error") */
+        fprintf(stderr, "Error: %s at line %d near '%s'\n", s, yylineno, yytext);
 }
 
-int main()
+int main(int argc, char **argv)
 {
-    printf("Parsing...\n");
+    if (argc < 2)
+    {
+        fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
+        return 1;
+    }
+
+    FILE *f = fopen(argv[1], "r");
+    if (!f)
+    {
+        perror("fopen");
+        return 1;
+    }
+
+    YY_BUFFER_STATE bp = yy_create_buffer(f, YY_BUF_SIZE);
+    yy_switch_to_buffer(bp);
+
     yyparse();
-    printf("Parsing finished.\n\n");
+
+    yy_delete_buffer(bp);
+
+    fclose(f);
+
     print_tree(root,0);
     return 0;
 }

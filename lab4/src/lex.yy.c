@@ -760,7 +760,7 @@ YY_DECL
 		}
 
 	{
-#line 46 "ss.l"
+#line 47 "ss.l"
 
 
 #line 767 "lex.yy.c"
@@ -832,189 +832,189 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 48 "ss.l"
+#line 49 "ss.l"
 { /* 忽略空白字符 */ }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 49 "ss.l"
+#line 50 "ss.l"
 { /* 忽略换行符 */ }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 51 "ss.l"
+#line 52 "ss.l"
 { }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 53 "ss.l"
+#line 54 "ss.l"
 { }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 55 "ss.l"
+#line 56 "ss.l"
 { return INT; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 56 "ss.l"
+#line 57 "ss.l"
 { return FLOAT; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 57 "ss.l"
+#line 58 "ss.l"
 { return VOID; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 58 "ss.l"
+#line 59 "ss.l"
 { return SEMICN; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 59 "ss.l"
+#line 60 "ss.l"
 { return COMMA; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 60 "ss.l"
+#line 61 "ss.l"
 { return ASSIGN; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 61 "ss.l"
+#line 62 "ss.l"
 { return EQ; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 62 "ss.l"
+#line 63 "ss.l"
 { return NE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 63 "ss.l"
+#line 64 "ss.l"
 { return LT; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 64 "ss.l"
+#line 65 "ss.l"
 { return LE; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 65 "ss.l"
+#line 66 "ss.l"
 { return GT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 66 "ss.l"
+#line 67 "ss.l"
 { return GE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 67 "ss.l"
+#line 68 "ss.l"
 { return MUL; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 68 "ss.l"
+#line 69 "ss.l"
 { return DIV; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 69 "ss.l"
+#line 70 "ss.l"
 { return AND; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 70 "ss.l"
+#line 71 "ss.l"
 { return OR; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 71 "ss.l"
+#line 72 "ss.l"
 { return NOT; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 72 "ss.l"
+#line 73 "ss.l"
 { return LP; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 73 "ss.l"
+#line 74 "ss.l"
 { return RP; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 74 "ss.l"
+#line 75 "ss.l"
 { return LB; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 75 "ss.l"
+#line 76 "ss.l"
 { return RB; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 76 "ss.l"
+#line 77 "ss.l"
 { return LC; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 77 "ss.l"
+#line 78 "ss.l"
 { return RC; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 78 "ss.l"
+#line 79 "ss.l"
 { return RETURN; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 79 "ss.l"
+#line 80 "ss.l"
 { return BREAK; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 80 "ss.l"
+#line 81 "ss.l"
 { return CONTINUE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 81 "ss.l"
+#line 82 "ss.l"
 { return IF; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 82 "ss.l"
+#line 83 "ss.l"
 { return ELSE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 83 "ss.l"
+#line 84 "ss.l"
 { return WHILE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 84 "ss.l"
+#line 85 "ss.l"
 { return PLUS; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 85 "ss.l"
+#line 86 "ss.l"
 { return MINUS; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 86 "ss.l"
+#line 87 "ss.l"
 { return CONST; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 88 "ss.l"
+#line 89 "ss.l"
 {
         int value;
         if (yytext[0] == '0' && (yytext[1] == 'x' || yytext[1] == 'X'))
@@ -1029,22 +1029,22 @@ YY_RULE_SETUP
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 100 "ss.l"
+#line 101 "ss.l"
 { yylval.float_val = atof(yytext); return FLOAT_LIT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 101 "ss.l"
+#line 102 "ss.l"
 { yylval.str_val = strdup(yytext); return ID; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 102 "ss.l"
+#line 103 "ss.l"
 { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 104 "ss.l"
+#line 105 "ss.l"
 ECHO;
 	YY_BREAK
 #line 1051 "lex.yy.c"
@@ -2064,7 +2064,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 104 "ss.l"
+#line 105 "ss.l"
 
 
 int yywrap(void) {

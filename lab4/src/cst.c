@@ -30,7 +30,7 @@ void print_tree(node *root, int depth)
     case CompUnit:
         printf("CompUnit\n");
         print_tree(root->right, depth + 1);
-        print_tree(root->left, depth + 1);
+        print_tree(root->left, depth);
         break;
 
     case ConstDecl:
@@ -118,7 +118,7 @@ void print_tree(node *root, int depth)
     case BlockItem:
         printf("BlockItem\n");
         print_tree(root->right, depth + 1);
-        print_tree(root->left, depth + 1);
+        print_tree(root->left, depth);
         break;
 
     case AssignStmt:

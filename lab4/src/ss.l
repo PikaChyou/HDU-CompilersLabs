@@ -4,6 +4,7 @@
 %}
 
 %option yylineno
+%option header-file="lex.yy.h"
 
 INT         int
 FLOAT       float
