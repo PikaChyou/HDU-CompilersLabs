@@ -2,13 +2,28 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
+#include <stdarg.h>
 #include "cst.h"
 #include "lex.yy.h"
 
 int yylex(void);
-void yyerror(const char *);
+
+typedef const enum Error_type{
+    Undecleared,
+    Redecleared,
+    Stmt_Error
+} Error_type;
+
+void yyerror(const char *, ...);
+
+extern bool error_flag;
 
 node *root;
+
+int error_cur_line = -1;
+
+extern Symbol *symbol_table;
 
 %}
 
@@ -47,11 +62,19 @@ CompUnit: ConstDecl             { $$ = append(CompUnit, NULL, NULL, $1, 0, 0, NU
         ;
 
 ConstDecl: CONST INT ConstDef SEMICN    { $$ = append(ConstDecl, NULL, NULL, $3, 0, 0, NULL, Int); }
-         | CONST FLOAT ConstDef SEMICN  { $$ = append(ConstDecl, NULL, NULL, $3, 0, 0, NULL, Float); }
+         | CONST FLOAT ConstDef SEMICN  {  $$ = append(ConstDecl, NULL, NULL, $3, 0, 0, NULL, Float); }
          ;
 
-ConstDef: ID ConstExpArray ASSIGN ConstInitVal                  { $$ = append(ConstDef, NULL, $2, $4, 0, 0, $1, NonType); }
-        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef   { $$ = append(ConstDef, $6, $2, $4, 0, 0, $1, NonType); }
+ConstDef: ID ConstExpArray ASSIGN ConstInitVal                  { 
+                                                                    if(!check_symbol($1, Var)) 
+                                                                        add_symbol($1, Var);
+                                                                    else
+                                                                    {
+                                                                        yyerror("xxx", Redecleared);
+                                                                    } 
+                                                                    $$ = append(ConstDef, NULL, $2, $4, 0, 0, $1, NonType); 
+                                                                }
+        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef   { add_symbol($1, Var);$$ = append(ConstDef, $6, $2, $4, 0, 0, $1, NonType); }
         ;
 
 ConstExpArray: /* empty */                      { $$ = NULL; }
@@ -124,6 +147,15 @@ Stmt: LVal ASSIGN Exp SEMICN         { $$ = append(AssignStmt, $3, NULL, $1, 0, 
     | CONTINUE SEMICN                { $$ = append(ContinueStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
     | RETURN Exp SEMICN              { $$ = append(ReturnStmt, NULL, NULL, $2, 0, 0, NULL, NonType); }
     | RETURN SEMICN                  { $$ = append(BlankReturnStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
+    | error                          { 
+                                        if(error_cur_line != yylineno) 
+                                        {
+                                            yyerror("stmt error!?!", Stmt_Error);
+                                            error_cur_line = yylineno;
+                                        } 
+                                        yyclearin; 
+                                        yyerrok; 
+                                     }
     ;
 
 Exp: AddExp     { $$ = append(Exp, NULL, NULL, $1, 0, 0, NULL, NonType); };
@@ -187,13 +219,21 @@ ExpArray: /* empty */           { $$ = NULL; }
 
 %%
 
-void yyerror(const char *s)
+void yyerror(const char *fmt, ...)
 {
     extern int yylineno;
     extern char *yytext;
     extern int yychar;
-    /* if(s!="syntax error") */
-        fprintf(stderr, "Error: %s at line %d near '%s'\n", s, yylineno, yytext);
+
+    va_list args;
+    va_start(args, fmt);
+
+    if(fmt!="syntax error")
+        fprintf(stderr, "Error type %d at line %d : '%s'\n", va_arg(args, int), yylineno, fmt);
+
+    va_end(args);
+
+    error_flag = true;
 }
 
 int main(int argc, char **argv)
@@ -220,6 +260,7 @@ int main(int argc, char **argv)
 
     fclose(f);
 
-    print_tree(root,0);
+    if(!error_flag) 
+        print_tree(root,0);
     return 0;
 }

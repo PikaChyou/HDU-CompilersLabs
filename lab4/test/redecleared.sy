@@ -1,0 +1,5 @@
+int main()
+{
+    const int a = 1;
+    const int a = 2;
+}

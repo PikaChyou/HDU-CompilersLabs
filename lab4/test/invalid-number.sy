@@ -1,0 +1,6 @@
+int main()
+{
+    int a = 0xg;
+    int b = 09;
+    return a + b;
+}

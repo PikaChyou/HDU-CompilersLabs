@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <string.h>
 #include "y.tab.h"
 
 typedef enum node_type
@@ -66,6 +68,23 @@ typedef struct Node
     node_type ntype;
 } node;
 
+typedef enum Symbol_Type
+{
+    Func,
+    Var
+} symbol_type;
+
+typedef struct Symbol
+{
+    char *name;
+    symbol_type type;
+    struct Symbol *next;
+} Symbol;
+
 node *append(node_type type, node *left, node *mid, node *right, int int_val, float float_val, char *id, node_type ntype);
 
 void print_tree(node *root, int depth);
+
+bool add_symbol(const char *name, symbol_type type);
+
+bool check_symbol(const char *name, symbol_type type);

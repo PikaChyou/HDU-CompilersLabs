@@ -1,6 +1,9 @@
 %{
     #include <stdio.h>
+    #include <stdbool.h>
     #include "y.tab.h"
+
+    bool error_flag = false;
 %}
 
 %option yylineno
@@ -18,7 +21,7 @@ BREAK       break
 CONTINUE    continue
 PLUS        \+
 MINUS       -
-INT_LIT     [1-9]+[0-9]*|0|0[xX][0-9a-fA-F]+|0[0-7]+
+INT_LIT     [1-9]+[0-9]*|0|0[xX][0-9a-zA-Z]+|0[0-9]+
 FLOAT_LIT   [0-9]+\.[0-9]*  
 ID          [a-z_A-Z][a-zA-Z_0-9]*
 SPACE       [ \t\r]*
@@ -89,9 +92,27 @@ RC          \}
 {INT_LIT}  {
         int value;
         if (yytext[0] == '0' && (yytext[1] == 'x' || yytext[1] == 'X'))
+        {
+            for (int i = 2; yytext[i] != '\0'; i++) {
+                if (yytext[i] < '0' || (yytext[i] > '9' && yytext[i] < 'A') || (yytext[i] > 'F' && yytext[i] < 'a') || yytext[i] > 'f') 
+                {
+                    fprintf(stderr, "Error type A at Line %d: Invalid hexadecimal number: %s\n", yylineno, yytext);
+                    error_flag = true;
+                }
+            }
             sscanf(yytext, "%x", &value);
+        }
         else if (yytext[0] == '0')
+        {
+            for (int i = 1; yytext[i] != '\0'; i++) {
+                if (yytext[i] < '0' || yytext[i] > '7')
+                {
+                    fprintf(stderr, "Error type A at Line %d: Invalid octal number: %s\n", yylineno, yytext);
+                    error_flag = true;    
+                }
+            }
             sscanf(yytext, "%o", &value);
+        }
         else
             sscanf(yytext, "%d", &value);
         yylval.int_val = value;
@@ -100,7 +121,7 @@ RC          \}
 
 {FLOAT_LIT}  { yylval.float_val = atof(yytext); return FLOAT_LIT; }
 {ID}       { yylval.str_val = strdup(yytext); return ID; }
-.          { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); }
+.          { printf("Error type A at Line %d: Invalid characters \'%s\'\n", yylineno, yytext); error_flag = true; }
 
 %%
 

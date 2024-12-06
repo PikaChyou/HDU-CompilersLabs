@@ -1,5 +1,36 @@
 #include "cst.h"
 
+Symbol *symbol_table = NULL;
+
+bool add_symbol(const char *name, symbol_type type)
+{
+    Symbol *symbol = symbol_table;
+    while (symbol)
+    {
+        if (strcmp(symbol->name, name) == 0 && symbol->type == type)
+            return false;
+        symbol = symbol->next;
+    }
+    symbol = (Symbol *)malloc(sizeof(Symbol));
+    symbol->name = strdup(name);
+    symbol->type = type;
+    symbol->next = symbol_table;
+    symbol_table = symbol;
+    return true;
+}
+
+bool check_symbol(const char *name, symbol_type type)
+{
+    Symbol *symbol = symbol_table;
+    while (symbol)
+    {
+        if (strcmp(symbol->name, name) == 0 && symbol->type == type)
+            return true;
+        symbol = symbol->next;
+    }
+    return false;
+}
+
 node *append(node_type type, node *left, node *mid, node *right, int int_val, float float_val, char *id, node_type ntype)
 {
     node *n = (node *)malloc(sizeof(node));
