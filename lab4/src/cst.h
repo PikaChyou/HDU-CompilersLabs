@@ -71,7 +71,8 @@ typedef struct Node
 typedef enum Symbol_Type
 {
     Func,
-    Var
+    Var,
+    Param
 } symbol_type;
 
 typedef struct Symbol

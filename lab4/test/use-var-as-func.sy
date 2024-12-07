@@ -1,0 +1,7 @@
+const int add = 0;
+
+int main()
+{
+    int a = 0;
+    return add(a);
+}

@@ -1,0 +1,10 @@
+int main()
+{
+    a = 3;
+    return a;
+}
+
+int add(int n)
+{
+    return x + 1;
+}

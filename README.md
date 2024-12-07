@@ -50,4 +50,18 @@ DFA 最小化部分基本由 Copilot 进行生成
 文档参考 => [GNU/Bison](https://www.gnu.org/software/bison/manual/html_node/index.html)  
 照抄 SysY2022 定义文档会产生巨多错误，需要进行调整  
 该部分参考了前人的智慧成果 => [kylinsoft/ex3-1-bison](https://github.com/kylinsoft/ex3-1-bison/blob/main/src/parser.y)  
-`IF-ELSE` 移进/规约冲突使用了 `%nonassoc` 声明非结合性来处理，不过 Bison 在生成输出文件时仍然会产生 warning，可以忽视
+`IF-ELSE` 移进/规约冲突使用了 `%nonassoc` 声明非结合性来处理，不过 Bison 在生成输出文件时仍然会产生 warning，可以忽视  
+
+支持识别以下语义错误：
+- 函数未声明
+- 函数重复声明
+- 把变量或常量当作函数使用（对变量或常量使用括号运算符）
+- 对函数名的不正当引用（作为普通变量或常量引用）  
+
+便于偷懒仅支持识别以下语义错误的部分情况（不支持区分变量或常量的生命周期）：
+- 变量或常量未声明
+- 变量或常量重复声明
+
+
+
+

@@ -80,8 +80,13 @@
 int yylex(void);
 
 typedef const enum Error_type{
-    Undecleared,
-    Redecleared,
+    Undefined,
+    VarUndecleared,
+    VarRedecleared,
+    FuncUndecleared,
+    FuncRedecleared,
+    UseVarAsFunc,
+    UseFuncAsVar,
     Stmt_Error
 } Error_type;
 
@@ -96,7 +101,7 @@ int error_cur_line = -1;
 extern Symbol *symbol_table;
 
 
-#line 100 "y.tab.c"
+#line 105 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -225,14 +230,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 30 "ss.y"
+#line 35 "ss.y"
 
     int int_val;
     float float_val;
     char *str_val;
     struct Node *node_val;
 
-#line 236 "y.tab.c"
+#line 241 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -708,18 +713,18 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    54,    54,    56,    57,    58,    59,    60,    61,    64,
-      65,    68,    77,    80,    81,    84,    85,    86,    87,    90,
-      91,    92,    95,    96,    99,   100,   101,   102,   105,   106,
-     107,   110,   111,   114,   115,   116,   117,   118,   119,   122,
-     123,   124,   125,   126,   127,   128,   129,   132,   134,   135,
-     136,   137,   140,   141,   142,   143,   144,   145,   146,   147,
-     148,   149,   150,   161,   163,   164,   165,   168,   169,   170,
-     171,   174,   175,   176,   177,   178,   179,   182,   183,   186,
-     187,   188,   189,   192,   194,   196,   197,   200,   201,   204,
-     205,   206,   209,   210,   211,   212,   213,   216,   217
+       0,    59,    59,    61,    62,    63,    64,    65,    66,    69,
+      70,    73,    80,    89,    90,    93,    94,    95,    96,    99,
+     100,   101,   104,   105,   108,   115,   122,   129,   138,   139,
+     140,   143,   144,   147,   154,   161,   168,   175,   182,   191,
+     196,   201,   206,   211,   216,   221,   226,   233,   235,   236,
+     237,   238,   241,   242,   243,   244,   245,   246,   247,   248,
+     249,   250,   251,   262,   264,   265,   266,   269,   270,   271,
+     272,   275,   276,   283,   290,   291,   292,   295,   296,   299,
+     300,   301,   302,   305,   313,   315,   316,   319,   320,   323,
+     324,   325,   328,   329,   330,   331,   332,   335,   336
 };
 #endif
 
@@ -1420,605 +1425,719 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* Root: CompUnit  */
-#line 54 "ss.y"
+#line 59 "ss.y"
                { root = append(Root, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1426 "y.tab.c"
+#line 1431 "y.tab.c"
     break;
 
   case 3: /* CompUnit: ConstDecl  */
-#line 56 "ss.y"
+#line 61 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1432 "y.tab.c"
+#line 1437 "y.tab.c"
     break;
 
   case 4: /* CompUnit: VarDecl  */
-#line 57 "ss.y"
+#line 62 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1438 "y.tab.c"
+#line 1443 "y.tab.c"
     break;
 
   case 5: /* CompUnit: FuncDef  */
-#line 58 "ss.y"
+#line 63 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1444 "y.tab.c"
+#line 1449 "y.tab.c"
     break;
 
   case 6: /* CompUnit: ConstDecl CompUnit  */
-#line 59 "ss.y"
+#line 64 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1450 "y.tab.c"
+#line 1455 "y.tab.c"
     break;
 
   case 7: /* CompUnit: VarDecl CompUnit  */
-#line 60 "ss.y"
+#line 65 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1456 "y.tab.c"
+#line 1461 "y.tab.c"
     break;
 
   case 8: /* CompUnit: FuncDef CompUnit  */
-#line 61 "ss.y"
+#line 66 "ss.y"
                                 { (yyval.node_val) = append(CompUnit, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1462 "y.tab.c"
+#line 1467 "y.tab.c"
     break;
 
   case 9: /* ConstDecl: CONST INT ConstDef SEMICN  */
-#line 64 "ss.y"
+#line 69 "ss.y"
                                         { (yyval.node_val) = append(ConstDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Int); }
-#line 1468 "y.tab.c"
+#line 1473 "y.tab.c"
     break;
 
   case 10: /* ConstDecl: CONST FLOAT ConstDef SEMICN  */
-#line 65 "ss.y"
+#line 70 "ss.y"
                                         {  (yyval.node_val) = append(ConstDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Float); }
-#line 1474 "y.tab.c"
+#line 1479 "y.tab.c"
     break;
 
   case 11: /* ConstDef: ID ConstExpArray ASSIGN ConstInitVal  */
-#line 68 "ss.y"
+#line 73 "ss.y"
                                                                 { 
                                                                     if(!check_symbol((yyvsp[-3].str_val), Var)) 
                                                                         add_symbol((yyvsp[-3].str_val), Var);
                                                                     else
-                                                                    {
-                                                                        yyerror("xxx", Redecleared);
-                                                                    } 
+                                                                        yyerror((yyvsp[-3].str_val), VarRedecleared);
                                                                     (yyval.node_val) = append(ConstDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), NonType); 
                                                                 }
-#line 1488 "y.tab.c"
+#line 1491 "y.tab.c"
     break;
 
   case 12: /* ConstDef: ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef  */
-#line 77 "ss.y"
-                                                                { add_symbol((yyvsp[-5].str_val), Var);(yyval.node_val) = append(ConstDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); }
-#line 1494 "y.tab.c"
+#line 80 "ss.y"
+                                                                { 
+                                                                    if(!check_symbol((yyvsp[-5].str_val), Var)) 
+                                                                        add_symbol((yyvsp[-5].str_val), Var);
+                                                                    else
+                                                                        yyerror((yyvsp[-5].str_val), VarRedecleared);
+                                                                    (yyval.node_val) = append(ConstDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); 
+                                                                }
+#line 1503 "y.tab.c"
     break;
 
   case 13: /* ConstExpArray: %empty  */
-#line 80 "ss.y"
+#line 89 "ss.y"
                                                 { (yyval.node_val) = NULL; }
-#line 1500 "y.tab.c"
+#line 1509 "y.tab.c"
     break;
 
   case 14: /* ConstExpArray: LB ConstExp RB ConstExpArray  */
-#line 81 "ss.y"
+#line 90 "ss.y"
                                                 { (yyval.node_val) = append(ConstExpArray, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 1506 "y.tab.c"
+#line 1515 "y.tab.c"
     break;
 
   case 15: /* ConstInitVal: ConstExp  */
-#line 84 "ss.y"
+#line 93 "ss.y"
                                                         { (yyval.node_val) = append(ConstInitVal, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1512 "y.tab.c"
+#line 1521 "y.tab.c"
     break;
 
   case 16: /* ConstInitVal: LC RC  */
-#line 85 "ss.y"
+#line 94 "ss.y"
                                                         { (yyval.node_val) = append(ConstInitVal, NULL, NULL, NULL, 0, 0, NULL, NonType); }
-#line 1518 "y.tab.c"
+#line 1527 "y.tab.c"
     break;
 
   case 17: /* ConstInitVal: LC ConstInitVal RC  */
-#line 86 "ss.y"
+#line 95 "ss.y"
                                                         { (yyval.node_val) = append(ConstInitVal, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1524 "y.tab.c"
+#line 1533 "y.tab.c"
     break;
 
   case 18: /* ConstInitVal: LC ConstInitVal COMMA ConstInitVal RC  */
-#line 87 "ss.y"
+#line 96 "ss.y"
                                                         { (yyval.node_val) = append(ConstInitVal, (yyvsp[-1].node_val), NULL, (yyvsp[-3].node_val), 0, 0, NULL, NonType); }
-#line 1530 "y.tab.c"
+#line 1539 "y.tab.c"
     break;
 
   case 19: /* ConstExp: MulExp  */
-#line 90 "ss.y"
+#line 99 "ss.y"
                                 { (yyval.node_val) = append(ConstExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1536 "y.tab.c"
+#line 1545 "y.tab.c"
     break;
 
   case 20: /* ConstExp: MulExp PLUS Exp  */
-#line 91 "ss.y"
+#line 100 "ss.y"
                                 { (yyval.node_val) = append(ConstExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), PLUS, 0, NULL, NonType); }
-#line 1542 "y.tab.c"
+#line 1551 "y.tab.c"
     break;
 
   case 21: /* ConstExp: MulExp MINUS Exp  */
-#line 92 "ss.y"
+#line 101 "ss.y"
                                 { (yyval.node_val) = append(ConstExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), MINUS, 0, NULL, NonType); }
-#line 1548 "y.tab.c"
+#line 1557 "y.tab.c"
     break;
 
   case 22: /* VarDecl: INT VarDef SEMICN  */
-#line 95 "ss.y"
+#line 104 "ss.y"
                                 { (yyval.node_val) = append(VarDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Int); }
-#line 1554 "y.tab.c"
+#line 1563 "y.tab.c"
     break;
 
   case 23: /* VarDecl: FLOAT VarDef SEMICN  */
-#line 96 "ss.y"
+#line 105 "ss.y"
                                 { (yyval.node_val) = append(VarDecl, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, Float); }
-#line 1560 "y.tab.c"
+#line 1569 "y.tab.c"
     break;
 
   case 24: /* VarDef: ID ConstExpArray  */
-#line 99 "ss.y"
-                                                        { (yyval.node_val) = append(VarDef, NULL, (yyvsp[0].node_val), NULL, 0, 0, (yyvsp[-1].str_val), NonType); }
-#line 1566 "y.tab.c"
+#line 108 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-1].str_val), Var)) 
+                                                                add_symbol((yyvsp[-1].str_val), Var);
+                                                            else
+                                                                yyerror((yyvsp[-1].str_val), VarRedecleared);
+                                                            (yyval.node_val) = append(VarDef, NULL, (yyvsp[0].node_val), NULL, 0, 0, (yyvsp[-1].str_val), NonType); 
+                                                        }
+#line 1581 "y.tab.c"
     break;
 
   case 25: /* VarDef: ID ConstExpArray ASSIGN InitVal  */
-#line 100 "ss.y"
-                                                        { (yyval.node_val) = append(VarDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), NonType); }
-#line 1572 "y.tab.c"
+#line 115 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-3].str_val), Var)) 
+                                                                add_symbol((yyvsp[-3].str_val), Var);
+                                                            else
+                                                                yyerror((yyvsp[-3].str_val), VarRedecleared);
+                                                            (yyval.node_val) = append(VarDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), NonType); 
+                                                        }
+#line 1593 "y.tab.c"
     break;
 
   case 26: /* VarDef: ID ConstExpArray COMMA VarDef  */
-#line 101 "ss.y"
-                                                        { (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-2].node_val), NULL, 0, 0, (yyvsp[-3].str_val), NonType); }
-#line 1578 "y.tab.c"
+#line 122 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-3].str_val), Var)) 
+                                                                add_symbol((yyvsp[-3].str_val), Var);
+                                                            else
+                                                                yyerror((yyvsp[-3].str_val), VarRedecleared);
+                                                            (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-2].node_val), NULL, 0, 0, (yyvsp[-3].str_val), NonType); 
+                                                        }
+#line 1605 "y.tab.c"
     break;
 
   case 27: /* VarDef: ID ConstExpArray ASSIGN InitVal COMMA VarDef  */
-#line 102 "ss.y"
-                                                        { (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); }
-#line 1584 "y.tab.c"
+#line 129 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-5].str_val), Var)) 
+                                                                add_symbol((yyvsp[-5].str_val), Var);
+                                                            else
+                                                                yyerror((yyvsp[-5].str_val), VarRedecleared);
+                                                            (yyval.node_val) = append(VarDef, (yyvsp[0].node_val), (yyvsp[-4].node_val), (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), NonType); 
+                                                        }
+#line 1617 "y.tab.c"
     break;
 
   case 28: /* InitVal: Exp  */
-#line 105 "ss.y"
+#line 138 "ss.y"
                         { (yyval.node_val) = append(InitVal, NULL, NULL, (yyvsp[0].node_val), Exp, 0, NULL, NonType); }
-#line 1590 "y.tab.c"
+#line 1623 "y.tab.c"
     break;
 
   case 29: /* InitVal: LC RC  */
-#line 106 "ss.y"
+#line 139 "ss.y"
                         { (yyval.node_val) = append(InitVal, NULL, NULL, NULL, InitVals, 0, NULL, NonType); }
-#line 1596 "y.tab.c"
+#line 1629 "y.tab.c"
     break;
 
   case 30: /* InitVal: LC InitVals RC  */
-#line 107 "ss.y"
+#line 140 "ss.y"
                         { (yyval.node_val) = append(InitVal, NULL, NULL, (yyvsp[-1].node_val), InitVals, 0, NULL, NonType); }
-#line 1602 "y.tab.c"
+#line 1635 "y.tab.c"
     break;
 
   case 31: /* InitVals: InitVal  */
-#line 110 "ss.y"
+#line 143 "ss.y"
                                         { (yyval.node_val) = append(InitVals, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1608 "y.tab.c"
+#line 1641 "y.tab.c"
     break;
 
   case 32: /* InitVals: InitVal COMMA InitVals  */
-#line 111 "ss.y"
+#line 144 "ss.y"
                                         { (yyval.node_val) = append(InitVals, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 1614 "y.tab.c"
+#line 1647 "y.tab.c"
     break;
 
   case 33: /* FuncDef: INT ID LP RP Block  */
-#line 114 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); }
-#line 1620 "y.tab.c"
+#line 147 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-3].str_val), Func)) 
+                                                        add_symbol((yyvsp[-3].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-3].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); 
+                                                }
+#line 1659 "y.tab.c"
     break;
 
   case 34: /* FuncDef: FLOAT ID LP RP Block  */
-#line 115 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); }
-#line 1626 "y.tab.c"
+#line 154 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-3].str_val), Func)) 
+                                                        add_symbol((yyvsp[-3].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-3].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); 
+                                                }
+#line 1671 "y.tab.c"
     break;
 
   case 35: /* FuncDef: VOID ID LP RP Block  */
-#line 116 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Void); }
-#line 1632 "y.tab.c"
+#line 161 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-3].str_val), Func)) 
+                                                        add_symbol((yyvsp[-3].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-3].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Void); 
+                                                }
+#line 1683 "y.tab.c"
     break;
 
   case 36: /* FuncDef: INT ID LP FuncFParam RP Block  */
-#line 117 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Int); }
-#line 1638 "y.tab.c"
+#line 168 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-4].str_val), Func)) 
+                                                        add_symbol((yyvsp[-4].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-4].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Int); 
+                                                }
+#line 1695 "y.tab.c"
     break;
 
   case 37: /* FuncDef: FLOAT ID LP FuncFParam RP Block  */
-#line 118 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Float); }
-#line 1644 "y.tab.c"
+#line 175 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-4].str_val), Func)) 
+                                                        add_symbol((yyvsp[-4].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-4].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Float); 
+                                                }
+#line 1707 "y.tab.c"
     break;
 
   case 38: /* FuncDef: VOID ID LP FuncFParam RP Block  */
-#line 119 "ss.y"
-                                                { (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Void); }
-#line 1650 "y.tab.c"
+#line 182 "ss.y"
+                                                { 
+                                                    if(!check_symbol((yyvsp[-4].str_val), Func)) 
+                                                        add_symbol((yyvsp[-4].str_val), Func);
+                                                    else
+                                                        yyerror((yyvsp[-4].str_val), FuncRedecleared);
+                                                    (yyval.node_val) = append(FuncDef, NULL, (yyvsp[-2].node_val), (yyvsp[0].node_val), 0, 0, (yyvsp[-4].str_val), Void); 
+                                                }
+#line 1719 "y.tab.c"
     break;
 
   case 39: /* FuncFParam: INT ID  */
-#line 122 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Int); }
-#line 1656 "y.tab.c"
+#line 191 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[0].str_val),Param))
+                                                                add_symbol((yyvsp[0].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Int); 
+                                                        }
+#line 1729 "y.tab.c"
     break;
 
   case 40: /* FuncFParam: FLOAT ID  */
-#line 123 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Float); }
-#line 1662 "y.tab.c"
+#line 196 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[0].str_val),Param))
+                                                                add_symbol((yyvsp[0].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, NULL, NULL, NULL, 0, 0, (yyvsp[0].str_val), Float); 
+                                                        }
+#line 1739 "y.tab.c"
     break;
 
   case 41: /* FuncFParam: INT ID LB RB ExpArray  */
-#line 124 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); }
-#line 1668 "y.tab.c"
+#line 201 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-3].str_val),Param))
+                                                                add_symbol((yyvsp[-3].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Int); 
+                                                        }
+#line 1749 "y.tab.c"
     break;
 
   case 42: /* FuncFParam: FLOAT ID LB RB ExpArray  */
-#line 125 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); }
-#line 1674 "y.tab.c"
+#line 206 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-3].str_val),Param))
+                                                                add_symbol((yyvsp[-3].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-3].str_val), Float); 
+                                                        }
+#line 1759 "y.tab.c"
     break;
 
   case 43: /* FuncFParam: INT ID COMMA FuncFParam  */
-#line 126 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Int); }
-#line 1680 "y.tab.c"
+#line 211 "ss.y"
+                                                        {   
+                                                            if(!check_symbol((yyvsp[-2].str_val),Param))
+                                                                add_symbol((yyvsp[-2].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Int); 
+                                                        }
+#line 1769 "y.tab.c"
     break;
 
   case 44: /* FuncFParam: FLOAT ID COMMA FuncFParam  */
-#line 127 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Float); }
-#line 1686 "y.tab.c"
+#line 216 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-2].str_val),Param))
+                                                                add_symbol((yyvsp[-2].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, NULL, 0, 0, (yyvsp[-2].str_val), Float); 
+                                                        }
+#line 1779 "y.tab.c"
     break;
 
   case 45: /* FuncFParam: INT ID LB RB ExpArray COMMA FuncFParam  */
-#line 128 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Int); }
-#line 1692 "y.tab.c"
+#line 221 "ss.y"
+                                                        {
+                                                            if(!check_symbol((yyvsp[-5].str_val),Param))
+                                                                add_symbol((yyvsp[-5].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Int); 
+                                                        }
+#line 1789 "y.tab.c"
     break;
 
   case 46: /* FuncFParam: FLOAT ID LB RB ExpArray COMMA FuncFParam  */
-#line 129 "ss.y"
-                                                        { (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Float); }
-#line 1698 "y.tab.c"
+#line 226 "ss.y"
+                                                        { 
+                                                            if(!check_symbol((yyvsp[-5].str_val),Param))
+                                                                add_symbol((yyvsp[-5].str_val),Param);
+                                                            (yyval.node_val) = append(FuncFParam, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, (yyvsp[-5].str_val), Float); 
+                                                        }
+#line 1799 "y.tab.c"
     break;
 
   case 47: /* Block: LC BlockItem RC  */
-#line 132 "ss.y"
+#line 233 "ss.y"
                        { (yyval.node_val) = append(Block, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1704 "y.tab.c"
+#line 1805 "y.tab.c"
     break;
 
   case 48: /* BlockItem: %empty  */
-#line 134 "ss.y"
+#line 235 "ss.y"
                                 { (yyval.node_val) = NULL; }
-#line 1710 "y.tab.c"
+#line 1811 "y.tab.c"
     break;
 
   case 49: /* BlockItem: ConstDecl BlockItem  */
-#line 135 "ss.y"
+#line 236 "ss.y"
                                 { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1716 "y.tab.c"
+#line 1817 "y.tab.c"
     break;
 
   case 50: /* BlockItem: VarDecl BlockItem  */
-#line 136 "ss.y"
+#line 237 "ss.y"
                                 { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1722 "y.tab.c"
+#line 1823 "y.tab.c"
     break;
 
   case 51: /* BlockItem: Stmt BlockItem  */
-#line 137 "ss.y"
+#line 238 "ss.y"
                                 { (yyval.node_val) = append(BlockItem, (yyvsp[0].node_val), NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1728 "y.tab.c"
+#line 1829 "y.tab.c"
     break;
 
   case 52: /* Stmt: LVal ASSIGN Exp SEMICN  */
-#line 140 "ss.y"
+#line 241 "ss.y"
                                      { (yyval.node_val) = append(AssignStmt, (yyvsp[-1].node_val), NULL, (yyvsp[-3].node_val), 0, 0, NULL, NonType); }
-#line 1734 "y.tab.c"
+#line 1835 "y.tab.c"
     break;
 
   case 53: /* Stmt: Exp SEMICN  */
-#line 141 "ss.y"
+#line 242 "ss.y"
                                      { (yyval.node_val) = append(ExpStmt, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1740 "y.tab.c"
+#line 1841 "y.tab.c"
     break;
 
   case 54: /* Stmt: Block  */
-#line 142 "ss.y"
+#line 243 "ss.y"
                                      { (yyval.node_val) = append(BlockStmt, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1746 "y.tab.c"
+#line 1847 "y.tab.c"
     break;
 
   case 55: /* Stmt: IF LP Cond RP Stmt  */
-#line 143 "ss.y"
+#line 244 "ss.y"
                                      { (yyval.node_val) = append(IfStmt, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 1752 "y.tab.c"
+#line 1853 "y.tab.c"
     break;
 
   case 56: /* Stmt: IF LP Cond RP Stmt ELSE Stmt  */
-#line 144 "ss.y"
+#line 245 "ss.y"
                                      { (yyval.node_val) = append(IfElseStmt, (yyvsp[0].node_val), (yyvsp[-2].node_val), (yyvsp[-4].node_val), 0, 0, NULL, NonType); }
-#line 1758 "y.tab.c"
+#line 1859 "y.tab.c"
     break;
 
   case 57: /* Stmt: WHILE LP Cond RP Stmt  */
-#line 145 "ss.y"
+#line 246 "ss.y"
                                      { (yyval.node_val) = append(WhileStmt, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 1764 "y.tab.c"
+#line 1865 "y.tab.c"
     break;
 
   case 58: /* Stmt: BREAK SEMICN  */
-#line 146 "ss.y"
+#line 247 "ss.y"
                                      { (yyval.node_val) = append(BreakStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
-#line 1770 "y.tab.c"
+#line 1871 "y.tab.c"
     break;
 
   case 59: /* Stmt: CONTINUE SEMICN  */
-#line 147 "ss.y"
+#line 248 "ss.y"
                                      { (yyval.node_val) = append(ContinueStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
-#line 1776 "y.tab.c"
+#line 1877 "y.tab.c"
     break;
 
   case 60: /* Stmt: RETURN Exp SEMICN  */
-#line 148 "ss.y"
+#line 249 "ss.y"
                                      { (yyval.node_val) = append(ReturnStmt, NULL, NULL, (yyvsp[-1].node_val), 0, 0, NULL, NonType); }
-#line 1782 "y.tab.c"
+#line 1883 "y.tab.c"
     break;
 
   case 61: /* Stmt: RETURN SEMICN  */
-#line 149 "ss.y"
+#line 250 "ss.y"
                                      { (yyval.node_val) = append(BlankReturnStmt, NULL, NULL, NULL, 0, 0, NULL, NonType); }
-#line 1788 "y.tab.c"
+#line 1889 "y.tab.c"
     break;
 
   case 62: /* Stmt: error  */
-#line 150 "ss.y"
+#line 251 "ss.y"
                                      { 
                                         if(error_cur_line != yylineno) 
                                         {
-                                            yyerror("stmt error!?!", Stmt_Error);
+                                            yyerror("", Stmt_Error);
                                             error_cur_line = yylineno;
                                         } 
                                         yyclearin; 
                                         yyerrok; 
                                      }
-#line 1802 "y.tab.c"
+#line 1903 "y.tab.c"
     break;
 
   case 63: /* Exp: AddExp  */
-#line 161 "ss.y"
+#line 262 "ss.y"
                 { (yyval.node_val) = append(Exp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1808 "y.tab.c"
+#line 1909 "y.tab.c"
     break;
 
   case 64: /* AddExp: MulExp  */
-#line 163 "ss.y"
+#line 264 "ss.y"
                                 { (yyval.node_val) = append(AddExp, NULL, NULL, (yyvsp[0].node_val), Mul, 0, NULL, NonType); }
-#line 1814 "y.tab.c"
+#line 1915 "y.tab.c"
     break;
 
   case 65: /* AddExp: MulExp PLUS AddExp  */
-#line 164 "ss.y"
+#line 265 "ss.y"
                                 { (yyval.node_val) = append(AddExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Plus, 0, NULL, NonType); }
-#line 1820 "y.tab.c"
+#line 1921 "y.tab.c"
     break;
 
   case 66: /* AddExp: MulExp MINUS AddExp  */
-#line 165 "ss.y"
+#line 266 "ss.y"
                                 { (yyval.node_val) = append(AddExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Minus, 0, NULL, NonType); }
-#line 1826 "y.tab.c"
+#line 1927 "y.tab.c"
     break;
 
   case 67: /* MulExp: UnaryExp  */
-#line 168 "ss.y"
+#line 269 "ss.y"
                                 { (yyval.node_val) = append(MulExp, NULL, NULL, (yyvsp[0].node_val), UnaryExp, 0, NULL, NonType); }
-#line 1832 "y.tab.c"
+#line 1933 "y.tab.c"
     break;
 
   case 68: /* MulExp: UnaryExp MUL MulExp  */
-#line 169 "ss.y"
+#line 270 "ss.y"
                                 { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Mul, 0, NULL, NonType); }
-#line 1838 "y.tab.c"
+#line 1939 "y.tab.c"
     break;
 
   case 69: /* MulExp: UnaryExp DIV MulExp  */
-#line 170 "ss.y"
+#line 271 "ss.y"
                                 { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Div, 0, NULL, NonType); }
-#line 1844 "y.tab.c"
+#line 1945 "y.tab.c"
     break;
 
   case 70: /* MulExp: UnaryExp MOD MulExp  */
-#line 171 "ss.y"
+#line 272 "ss.y"
                                 { (yyval.node_val) = append(MulExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), Mod, 0, NULL, NonType); }
-#line 1850 "y.tab.c"
+#line 1951 "y.tab.c"
     break;
 
   case 71: /* UnaryExp: PrimaryExp  */
-#line 174 "ss.y"
+#line 275 "ss.y"
                                 { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), PrimaryExp, 0, NULL, NonType); }
-#line 1856 "y.tab.c"
+#line 1957 "y.tab.c"
     break;
 
   case 72: /* UnaryExp: ID LP RP  */
-#line 175 "ss.y"
-                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, NULL, FuncRParams, 0, (yyvsp[-2].str_val), NonType); }
-#line 1862 "y.tab.c"
+#line 276 "ss.y"
+                                { 
+                                    if(check_symbol((yyvsp[-2].str_val), Var))
+                                        yyerror((yyvsp[-2].str_val), UseVarAsFunc);
+                                    else if(!check_symbol((yyvsp[-2].str_val), Func))
+                                        yyerror((yyvsp[-2].str_val), FuncUndecleared);
+                                    (yyval.node_val) = append(UnaryExp, NULL, NULL, NULL, FuncRParams, 0, (yyvsp[-2].str_val), NonType); 
+                                }
+#line 1969 "y.tab.c"
     break;
 
   case 73: /* UnaryExp: ID LP FuncRParams RP  */
-#line 176 "ss.y"
-                                { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[-1].node_val), FuncRParams, 0, (yyvsp[-3].str_val), NonType); }
-#line 1868 "y.tab.c"
+#line 283 "ss.y"
+                                { 
+                                    if(check_symbol((yyvsp[-3].str_val), Var))
+                                        yyerror((yyvsp[-3].str_val), UseVarAsFunc);
+                                    else if(!check_symbol((yyvsp[-3].str_val), Func))
+                                        yyerror((yyvsp[-3].str_val), FuncUndecleared);
+                                    (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[-1].node_val), FuncRParams, 0, (yyvsp[-3].str_val), NonType); 
+                                }
+#line 1981 "y.tab.c"
     break;
 
   case 74: /* UnaryExp: PLUS UnaryExp  */
-#line 177 "ss.y"
+#line 290 "ss.y"
                                 { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), PLUS, 0, NULL, NonType); }
-#line 1874 "y.tab.c"
+#line 1987 "y.tab.c"
     break;
 
   case 75: /* UnaryExp: MINUS UnaryExp  */
-#line 178 "ss.y"
+#line 291 "ss.y"
                                 { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), MINUS, 0, NULL, NonType); }
-#line 1880 "y.tab.c"
+#line 1993 "y.tab.c"
     break;
 
   case 76: /* UnaryExp: NOT UnaryExp  */
-#line 179 "ss.y"
+#line 292 "ss.y"
                                 { (yyval.node_val) = append(UnaryExp, NULL, NULL, (yyvsp[0].node_val), Not, 0, NULL, NonType); }
-#line 1886 "y.tab.c"
+#line 1999 "y.tab.c"
     break;
 
   case 77: /* FuncRParams: Exp  */
-#line 182 "ss.y"
+#line 295 "ss.y"
                                         { (yyval.node_val) = append(FuncRParams, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1892 "y.tab.c"
+#line 2005 "y.tab.c"
     break;
 
   case 78: /* FuncRParams: Exp COMMA FuncRParams  */
-#line 183 "ss.y"
+#line 296 "ss.y"
                                         { (yyval.node_val) = append(FuncRParams, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 1898 "y.tab.c"
+#line 2011 "y.tab.c"
     break;
 
   case 79: /* PrimaryExp: LP Exp RP  */
-#line 186 "ss.y"
+#line 299 "ss.y"
                         { (yyval.node_val) = append(PrimaryExp, NULL, NULL, (yyvsp[-1].node_val), Exp, 0, NULL, NonType); }
-#line 1904 "y.tab.c"
+#line 2017 "y.tab.c"
     break;
 
   case 80: /* PrimaryExp: LVal  */
-#line 187 "ss.y"
+#line 300 "ss.y"
                         { (yyval.node_val) = append(PrimaryExp, NULL, NULL, (yyvsp[0].node_val), LVal, 0, NULL, NonType); }
-#line 1910 "y.tab.c"
+#line 2023 "y.tab.c"
     break;
 
   case 81: /* PrimaryExp: INT_LIT  */
-#line 188 "ss.y"
+#line 301 "ss.y"
                         { (yyval.node_val) = append(PrimaryExp, NULL, NULL, NULL, (yyvsp[0].int_val), 0, NULL, Int); }
-#line 1916 "y.tab.c"
+#line 2029 "y.tab.c"
     break;
 
   case 82: /* PrimaryExp: FLOAT_LIT  */
-#line 189 "ss.y"
+#line 302 "ss.y"
                         { (yyval.node_val) = append(PrimaryExp, NULL, NULL, NULL, 0, (yyvsp[0].float_val), NULL, Float); }
-#line 1922 "y.tab.c"
+#line 2035 "y.tab.c"
     break;
 
   case 83: /* LVal: ID ExpArray  */
-#line 192 "ss.y"
-                        { (yyval.node_val) = append(LVal, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-1].str_val), NonType); }
-#line 1928 "y.tab.c"
+#line 305 "ss.y"
+                        { 
+                            if(check_symbol((yyvsp[-1].str_val), Func))
+                                yyerror((yyvsp[-1].str_val), UseFuncAsVar);
+                            else if(!check_symbol((yyvsp[-1].str_val),Var) && !check_symbol((yyvsp[-1].str_val),Param))
+                                yyerror((yyvsp[-1].str_val), VarUndecleared); 
+                            (yyval.node_val) = append(LVal, NULL, NULL, (yyvsp[0].node_val), 0, 0, (yyvsp[-1].str_val), NonType); 
+                        }
+#line 2047 "y.tab.c"
     break;
 
   case 84: /* Cond: LOrExp  */
-#line 194 "ss.y"
+#line 313 "ss.y"
                         { (yyval.node_val) = append(Cond, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1934 "y.tab.c"
+#line 2053 "y.tab.c"
     break;
 
   case 85: /* LOrExp: LAndExp  */
-#line 196 "ss.y"
+#line 315 "ss.y"
                                 { (yyval.node_val) = append(Cond, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1940 "y.tab.c"
+#line 2059 "y.tab.c"
     break;
 
   case 86: /* LOrExp: LAndExp OR LOrExp  */
-#line 197 "ss.y"
+#line 316 "ss.y"
                                 { (yyval.node_val) = append(Cond, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), OR, 0, 0, NonType); }
-#line 1946 "y.tab.c"
+#line 2065 "y.tab.c"
     break;
 
   case 87: /* LAndExp: EqExp  */
-#line 200 "ss.y"
+#line 319 "ss.y"
                                 { (yyval.node_val) = append(LAndExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1952 "y.tab.c"
+#line 2071 "y.tab.c"
     break;
 
   case 88: /* LAndExp: EqExp AND LAndExp  */
-#line 201 "ss.y"
+#line 320 "ss.y"
                                 { (yyval.node_val) = append(LAndExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), AND, 0, NULL, NonType); }
-#line 1958 "y.tab.c"
+#line 2077 "y.tab.c"
     break;
 
   case 89: /* EqExp: RelExp  */
-#line 204 "ss.y"
+#line 323 "ss.y"
                         { (yyval.node_val) = append(EqExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1964 "y.tab.c"
+#line 2083 "y.tab.c"
     break;
 
   case 90: /* EqExp: RelExp EQ EqExp  */
-#line 205 "ss.y"
+#line 324 "ss.y"
                         { (yyval.node_val) = append(EqExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), EQ, 0, NULL, NonType); }
-#line 1970 "y.tab.c"
+#line 2089 "y.tab.c"
     break;
 
   case 91: /* EqExp: RelExp NE EqExp  */
-#line 206 "ss.y"
+#line 325 "ss.y"
                         { (yyval.node_val) = append(EqExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), NE, 0, NULL, NonType); }
-#line 1976 "y.tab.c"
+#line 2095 "y.tab.c"
     break;
 
   case 92: /* RelExp: AddExp  */
-#line 209 "ss.y"
+#line 328 "ss.y"
                          { (yyval.node_val) = append(RelExp, NULL, NULL, (yyvsp[0].node_val), 0, 0, NULL, NonType); }
-#line 1982 "y.tab.c"
+#line 2101 "y.tab.c"
     break;
 
   case 93: /* RelExp: AddExp LT RelExp  */
-#line 210 "ss.y"
+#line 329 "ss.y"
                          { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), LT, 0, NULL, NonType); }
-#line 1988 "y.tab.c"
+#line 2107 "y.tab.c"
     break;
 
   case 94: /* RelExp: AddExp GT RelExp  */
-#line 211 "ss.y"
+#line 330 "ss.y"
                          { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), GT, 0, NULL, NonType); }
-#line 1994 "y.tab.c"
+#line 2113 "y.tab.c"
     break;
 
   case 95: /* RelExp: AddExp LE RelExp  */
-#line 212 "ss.y"
+#line 331 "ss.y"
                          { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), LE, 0, NULL, NonType); }
-#line 2000 "y.tab.c"
+#line 2119 "y.tab.c"
     break;
 
   case 96: /* RelExp: AddExp GE RelExp  */
-#line 213 "ss.y"
+#line 332 "ss.y"
                          { (yyval.node_val) = append(RelExp, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), GE, 0, NULL, NonType); }
-#line 2006 "y.tab.c"
+#line 2125 "y.tab.c"
     break;
 
   case 97: /* ExpArray: %empty  */
-#line 216 "ss.y"
+#line 335 "ss.y"
                                 { (yyval.node_val) = NULL; }
-#line 2012 "y.tab.c"
+#line 2131 "y.tab.c"
     break;
 
   case 98: /* ExpArray: LB Exp RB ExpArray  */
-#line 217 "ss.y"
+#line 336 "ss.y"
                                 { (yyval.node_val) = append(ExpArray, (yyvsp[0].node_val), NULL, (yyvsp[-2].node_val), 0, 0, NULL, NonType); }
-#line 2018 "y.tab.c"
+#line 2137 "y.tab.c"
     break;
 
 
-#line 2022 "y.tab.c"
+#line 2141 "y.tab.c"
 
       default: break;
     }
@@ -2211,7 +2330,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 220 "ss.y"
+#line 339 "ss.y"
 
 
 void yyerror(const char *fmt, ...)
@@ -2224,7 +2343,33 @@ void yyerror(const char *fmt, ...)
     va_start(args, fmt);
 
     if(fmt!="syntax error")
-        fprintf(stderr, "Error type %d at line %d : '%s'\n", va_arg(args, int), yylineno, fmt);
+        switch(va_arg(args, int))
+        {
+            case VarUndecleared:
+                fprintf(stderr, "Error type %d at line %d : var '%s' undeclared\n", VarUndecleared, yylineno, fmt);
+                break;
+            case VarRedecleared:
+                fprintf(stderr, "Error type %d at line %d : var '%s' redeclared\n", VarRedecleared, yylineno, fmt);
+                break;
+            case FuncUndecleared:
+                fprintf(stderr, "Error type %d at line %d : func '%s' undeclared\n", FuncUndecleared, yylineno, fmt);
+                break;
+            case FuncRedecleared:
+                fprintf(stderr, "Error type %d at line %d : func '%s' redeclared\n", FuncRedecleared, yylineno, fmt);
+                break;
+            case UseVarAsFunc:
+                fprintf(stderr, "Error type %d at line %d : var '%s' be used as func\n", UseVarAsFunc, yylineno, fmt);
+                break;
+            case UseFuncAsVar:
+                fprintf(stderr, "Error type %d at line %d : func '%s' be used as var\n", UseFuncAsVar, yylineno, fmt);
+                break;
+            case Stmt_Error:
+                fprintf(stderr, "Error type %d at line %d : invalid grammar\n", Stmt_Error, yylineno);
+                break;
+            default:
+                fprintf(stderr, "Undefined error at line %d : %s\n", yylineno, fmt);
+        }
+        /* fprintf(stderr, "Error type %d at line %d : '%s'\n", va_arg(args, int), yylineno, fmt); */
 
     va_end(args);
 

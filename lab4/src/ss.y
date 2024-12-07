@@ -10,8 +10,13 @@
 int yylex(void);
 
 typedef const enum Error_type{
-    Undecleared,
-    Redecleared,
+    Undefined,
+    VarUndecleared,
+    VarRedecleared,
+    FuncUndecleared,
+    FuncRedecleared,
+    UseVarAsFunc,
+    UseFuncAsVar,
     Stmt_Error
 } Error_type;
 
@@ -69,12 +74,16 @@ ConstDef: ID ConstExpArray ASSIGN ConstInitVal                  {
                                                                     if(!check_symbol($1, Var)) 
                                                                         add_symbol($1, Var);
                                                                     else
-                                                                    {
-                                                                        yyerror("xxx", Redecleared);
-                                                                    } 
+                                                                        yyerror($1, VarRedecleared);
                                                                     $$ = append(ConstDef, NULL, $2, $4, 0, 0, $1, NonType); 
                                                                 }
-        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef   { add_symbol($1, Var);$$ = append(ConstDef, $6, $2, $4, 0, 0, $1, NonType); }
+        | ID ConstExpArray ASSIGN ConstInitVal COMMA ConstDef   { 
+                                                                    if(!check_symbol($1, Var)) 
+                                                                        add_symbol($1, Var);
+                                                                    else
+                                                                        yyerror($1, VarRedecleared);
+                                                                    $$ = append(ConstDef, $6, $2, $4, 0, 0, $1, NonType); 
+                                                                }
         ;
 
 ConstExpArray: /* empty */                      { $$ = NULL; }
@@ -96,10 +105,34 @@ VarDecl: INT VarDef SEMICN      { $$ = append(VarDecl, NULL, NULL, $2, 0, 0, NUL
        | FLOAT VarDef SEMICN    { $$ = append(VarDecl, NULL, NULL, $2, 0, 0, NULL, Float); }
        ;
        
-VarDef: ID ConstExpArray                                { $$ = append(VarDef, NULL, $2, NULL, 0, 0, $1, NonType); }
-      | ID ConstExpArray ASSIGN InitVal                 { $$ = append(VarDef, NULL, $2, $4, 0, 0, $1, NonType); }
-      | ID ConstExpArray COMMA VarDef                   { $$ = append(VarDef, $4, $2, NULL, 0, 0, $1, NonType); }
-      | ID ConstExpArray ASSIGN InitVal COMMA VarDef    { $$ = append(VarDef, $6, $2, $4, 0, 0, $1, NonType); }
+VarDef: ID ConstExpArray                                { 
+                                                            if(!check_symbol($1, Var)) 
+                                                                add_symbol($1, Var);
+                                                            else
+                                                                yyerror($1, VarRedecleared);
+                                                            $$ = append(VarDef, NULL, $2, NULL, 0, 0, $1, NonType); 
+                                                        }
+      | ID ConstExpArray ASSIGN InitVal                 { 
+                                                            if(!check_symbol($1, Var)) 
+                                                                add_symbol($1, Var);
+                                                            else
+                                                                yyerror($1, VarRedecleared);
+                                                            $$ = append(VarDef, NULL, $2, $4, 0, 0, $1, NonType); 
+                                                        }
+      | ID ConstExpArray COMMA VarDef                   { 
+                                                            if(!check_symbol($1, Var)) 
+                                                                add_symbol($1, Var);
+                                                            else
+                                                                yyerror($1, VarRedecleared);
+                                                            $$ = append(VarDef, $4, $2, NULL, 0, 0, $1, NonType); 
+                                                        }
+      | ID ConstExpArray ASSIGN InitVal COMMA VarDef    { 
+                                                            if(!check_symbol($1, Var)) 
+                                                                add_symbol($1, Var);
+                                                            else
+                                                                yyerror($1, VarRedecleared);
+                                                            $$ = append(VarDef, $6, $2, $4, 0, 0, $1, NonType); 
+                                                        }
       ;
 
 InitVal: Exp            { $$ = append(InitVal, NULL, NULL, $1, Exp, 0, NULL, NonType); }
@@ -111,22 +144,90 @@ InitVals: InitVal                       { $$ = append(InitVals, NULL, NULL, $1, 
         | InitVal COMMA InitVals        { $$ = append(InitVals, $3, NULL, $1, 0, 0, NULL, NonType); }
         ;
 
-FuncDef: INT ID LP RP Block                     { $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Int); }
-       | FLOAT ID LP RP Block                   { $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Float); }
-       | VOID ID LP RP Block                    { $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Void); }
-       | INT ID LP FuncFParam RP Block          { $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Int); }
-       | FLOAT ID LP FuncFParam RP Block        { $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Float); }
-       | VOID ID LP FuncFParam RP Block         { $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Void); }
+FuncDef: INT ID LP RP Block                     { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Int); 
+                                                }
+       | FLOAT ID LP RP Block                   { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Float); 
+                                                }
+       | VOID ID LP RP Block                    { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, NULL, $5, 0, 0, $2, Void); 
+                                                }
+       | INT ID LP FuncFParam RP Block          { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Int); 
+                                                }
+       | FLOAT ID LP FuncFParam RP Block        { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Float); 
+                                                }
+       | VOID ID LP FuncFParam RP Block         { 
+                                                    if(!check_symbol($2, Func)) 
+                                                        add_symbol($2, Func);
+                                                    else
+                                                        yyerror($2, FuncRedecleared);
+                                                    $$ = append(FuncDef, NULL, $4, $6, 0, 0, $2, Void); 
+                                                }
        ;
 
-FuncFParam: INT ID                                      { $$ = append(FuncFParam, NULL, NULL, NULL, 0, 0, $2, Int); }
-          | FLOAT ID                                    { $$ = append(FuncFParam, NULL, NULL, NULL, 0, 0, $2, Float); }
-          | INT ID LB RB ExpArray                       { $$ = append(FuncFParam, NULL, NULL, $5, 0, 0, $2, Int); }
-          | FLOAT ID LB RB ExpArray                     { $$ = append(FuncFParam, NULL, NULL, $5, 0, 0, $2, Float); }
-          | INT ID COMMA FuncFParam                     { $$ = append(FuncFParam, $4, NULL, NULL, 0, 0, $2, Int); }
-          | FLOAT ID COMMA FuncFParam                   { $$ = append(FuncFParam, $4, NULL, NULL, 0, 0, $2, Float); }
-          | INT ID LB RB ExpArray COMMA FuncFParam      { $$ = append(FuncFParam, $7, NULL, $5, 0, 0, $2, Int); }
-          | FLOAT ID LB RB ExpArray COMMA FuncFParam    { $$ = append(FuncFParam, $7, NULL, $5, 0, 0, $2, Float); }
+FuncFParam: INT ID                                      { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, NULL, NULL, NULL, 0, 0, $2, Int); 
+                                                        }
+          | FLOAT ID                                    { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, NULL, NULL, NULL, 0, 0, $2, Float); 
+                                                        }
+          | INT ID LB RB ExpArray                       { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, NULL, NULL, $5, 0, 0, $2, Int); 
+                                                        }
+          | FLOAT ID LB RB ExpArray                     { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, NULL, NULL, $5, 0, 0, $2, Float); 
+                                                        }
+          | INT ID COMMA FuncFParam                     {   
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, $4, NULL, NULL, 0, 0, $2, Int); 
+                                                        }
+          | FLOAT ID COMMA FuncFParam                   { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, $4, NULL, NULL, 0, 0, $2, Float); 
+                                                        }
+          | INT ID LB RB ExpArray COMMA FuncFParam      {
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, $7, NULL, $5, 0, 0, $2, Int); 
+                                                        }
+          | FLOAT ID LB RB ExpArray COMMA FuncFParam    { 
+                                                            if(!check_symbol($2,Param))
+                                                                add_symbol($2,Param);
+                                                            $$ = append(FuncFParam, $7, NULL, $5, 0, 0, $2, Float); 
+                                                        }
           ;
 
 Block: LC BlockItem RC { $$ = append(Block, NULL, NULL, $2, 0, 0, NULL, NonType); };
@@ -150,7 +251,7 @@ Stmt: LVal ASSIGN Exp SEMICN         { $$ = append(AssignStmt, $3, NULL, $1, 0, 
     | error                          { 
                                         if(error_cur_line != yylineno) 
                                         {
-                                            yyerror("stmt error!?!", Stmt_Error);
+                                            yyerror("", Stmt_Error);
                                             error_cur_line = yylineno;
                                         } 
                                         yyclearin; 
@@ -172,8 +273,20 @@ MulExp: UnaryExp                { $$ = append(MulExp, NULL, NULL, $1, UnaryExp, 
       ;
 
 UnaryExp: PrimaryExp            { $$ = append(UnaryExp, NULL, NULL, $1, PrimaryExp, 0, NULL, NonType); }
-        | ID LP RP              { $$ = append(UnaryExp, NULL, NULL, NULL, FuncRParams, 0, $1, NonType); }
-        | ID LP FuncRParams RP  { $$ = append(UnaryExp, NULL, NULL, $3, FuncRParams, 0, $1, NonType); }
+        | ID LP RP              { 
+                                    if(check_symbol($1, Var))
+                                        yyerror($1, UseVarAsFunc);
+                                    else if(!check_symbol($1, Func))
+                                        yyerror($1, FuncUndecleared);
+                                    $$ = append(UnaryExp, NULL, NULL, NULL, FuncRParams, 0, $1, NonType); 
+                                }
+        | ID LP FuncRParams RP  { 
+                                    if(check_symbol($1, Var))
+                                        yyerror($1, UseVarAsFunc);
+                                    else if(!check_symbol($1, Func))
+                                        yyerror($1, FuncUndecleared);
+                                    $$ = append(UnaryExp, NULL, NULL, $3, FuncRParams, 0, $1, NonType); 
+                                }
         | PLUS UnaryExp         { $$ = append(UnaryExp, NULL, NULL, $2, PLUS, 0, NULL, NonType); }
         | MINUS UnaryExp        { $$ = append(UnaryExp, NULL, NULL, $2, MINUS, 0, NULL, NonType); }
         | NOT UnaryExp          { $$ = append(UnaryExp, NULL, NULL, $2, Not, 0, NULL, NonType); }
@@ -189,7 +302,13 @@ PrimaryExp: LP Exp RP   { $$ = append(PrimaryExp, NULL, NULL, $2, Exp, 0, NULL, 
           | FLOAT_LIT   { $$ = append(PrimaryExp, NULL, NULL, NULL, 0, $1, NULL, Float); }
           ;
 
-LVal: ID ExpArray       { $$ = append(LVal, NULL, NULL, $2, 0, 0, $1, NonType); };
+LVal: ID ExpArray       { 
+                            if(check_symbol($1, Func))
+                                yyerror($1, UseFuncAsVar);
+                            else if(!check_symbol($1,Var) && !check_symbol($1,Param))
+                                yyerror($1, VarUndecleared); 
+                            $$ = append(LVal, NULL, NULL, $2, 0, 0, $1, NonType); 
+                        };
 
 Cond: LOrExp            { $$ = append(Cond, NULL, NULL, $1, 0, 0, NULL, NonType); };
 
@@ -229,7 +348,33 @@ void yyerror(const char *fmt, ...)
     va_start(args, fmt);
 
     if(fmt!="syntax error")
-        fprintf(stderr, "Error type %d at line %d : '%s'\n", va_arg(args, int), yylineno, fmt);
+        switch(va_arg(args, int))
+        {
+            case VarUndecleared:
+                fprintf(stderr, "Error type %d at line %d : var '%s' undeclared\n", VarUndecleared, yylineno, fmt);
+                break;
+            case VarRedecleared:
+                fprintf(stderr, "Error type %d at line %d : var '%s' redeclared\n", VarRedecleared, yylineno, fmt);
+                break;
+            case FuncUndecleared:
+                fprintf(stderr, "Error type %d at line %d : func '%s' undeclared\n", FuncUndecleared, yylineno, fmt);
+                break;
+            case FuncRedecleared:
+                fprintf(stderr, "Error type %d at line %d : func '%s' redeclared\n", FuncRedecleared, yylineno, fmt);
+                break;
+            case UseVarAsFunc:
+                fprintf(stderr, "Error type %d at line %d : var '%s' be used as func\n", UseVarAsFunc, yylineno, fmt);
+                break;
+            case UseFuncAsVar:
+                fprintf(stderr, "Error type %d at line %d : func '%s' be used as var\n", UseFuncAsVar, yylineno, fmt);
+                break;
+            case Stmt_Error:
+                fprintf(stderr, "Error type %d at line %d : semantic error\n", Stmt_Error, yylineno);
+                break;
+            default:
+                fprintf(stderr, "Undefined error at line %d : %s\n", yylineno, fmt);
+        }
+        /* fprintf(stderr, "Error type %d at line %d : '%s'\n", va_arg(args, int), yylineno, fmt); */
 
     va_end(args);
 
