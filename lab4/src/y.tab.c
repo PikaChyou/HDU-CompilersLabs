@@ -2364,7 +2364,7 @@ void yyerror(const char *fmt, ...)
                 fprintf(stderr, "Error type %d at line %d : func '%s' be used as var\n", UseFuncAsVar, yylineno, fmt);
                 break;
             case Stmt_Error:
-                fprintf(stderr, "Error type %d at line %d : invalid grammar\n", Stmt_Error, yylineno);
+                fprintf(stderr, "Error type %d at line %d : semantic error\n", Stmt_Error, yylineno);
                 break;
             default:
                 fprintf(stderr, "Undefined error at line %d : %s\n", yylineno, fmt);

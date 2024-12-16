@@ -296,6 +296,14 @@ void Grammar::traverseTrie(TrieNode *root, Symbol L, vector<Symbol> R)
     // 若当前节点只有一个子节点，则继续遍历树
     while (root->children.size() == 1)
     {
+        if (root->isEndOfWord)
+        {
+            auto it = find(rules.begin(), rules.end(), Rule{L, {R}});
+            if (it == rules.end())
+                rules.push_back({L, {R}});
+            else
+                it->rights.push_back(R);
+        }
         auto it = root->children.begin();
         R.push_back(it->first);
         root = it->second;
